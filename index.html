@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c8102e">
+<title>Xinès de viatge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #faf7f2;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    background: #c8102e;
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  header h1 { font-size: 18px; font-weight: 600; }
+  header .stats { font-size: 12px; opacity: 0.85; }
+  nav {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: #fff;
+    border-bottom: 1px solid #e5e0d6;
+    position: sticky;
+    top: 50px;
+    z-index: 9;
+  }
+  nav button {
+    background: none;
+    border: none;
+    padding: 10px 4px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  nav button.active { color: #c8102e; border-bottom-color: #c8102e; }
+  nav button .ico { display: block; font-size: 20px; margin-bottom: 2px; }
+  main {
+    flex: 1;
+    padding: 14px;
+    padding-bottom: 80px;
+    overflow-y: auto;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Phrases view */
+  .cat-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    scrollbar-width: none;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tabs button {
+    background: #fff;
+    border: 1px solid #e5e0d6;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    color: #555;
+  }
+  .cat-tabs button.active { background: #c8102e; color: #fff; border-color: #c8102e; }
+  .phrase-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .phrase-text { flex: 1; min-width: 0; }
+  .hanzi { font-size: 24px; font-weight: 500; color: #222; line-height: 1.2; }
+  .pinyin { font-size: 14px; color: #c8102e; margin-top: 2px; font-style: italic; }
+  .meaning { font-size: 13px; color: #666; margin-top: 4px; }
+  .play-btn {
+    background: #c8102e;
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .play-btn:active { transform: scale(0.92); }
+
+  /* Flashcards */
+  .flashcard-area {
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .flashcard {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 24px;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .flashcard .big-hanzi { font-size: 64px; font-weight: 400; line-height: 1.1; margin-bottom: 12px; }
+  .flashcard .big-pinyin { font-size: 22px; color: #c8102e; font-style: italic; margin-bottom: 12px; }
+  .flashcard .big-meaning { font-size: 20px; color: #444; }
+  .flashcard .hint { font-size: 12px; color: #aaa; margin-top: 16px; }
+  .grade-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .grade-row button {
+    border: none;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+  }
+  .g-bad { background: #d64545; }
+  .g-ok { background: #d4a017; }
+  .g-good { background: #2d8659; }
+
+  /* Quiz */
+  .quiz-question {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 14px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .quiz-prompt-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .quiz-prompt { font-size: 36px; font-weight: 500; }
+  .quiz-prompt.small { font-size: 20px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .quiz-options button {
+    background: #fff;
+    border: 2px solid #e5e0d6;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .quiz-options button.correct { background: #d4f0dc; border-color: #2d8659; }
+  .quiz-options button.wrong { background: #fadcdc; border-color: #d64545; }
+  .quiz-feedback { text-align: center; padding: 14px; font-size: 14px; min-height: 40px; }
+
+  /* Tones */
+  .tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tone-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+  }
+  .tone-card .tone-num {
+    display: inline-block;
+    background: #c8102e;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    line-height: 28px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tone-card .tone-syl { font-size: 32px; font-weight: 500; color: #c8102e; margin: 6px 0; }
+  .tone-card .tone-desc { font-size: 12px; color: #666; }
+  .tone-shape { font-size: 24px; color: #c8102e; }
+
+  .info-block {
+    background: #fff7e6;
+    border-left: 3px solid #d4a017;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .empty { text-align: center; color: #999; padding: 40px 20px; font-size: 14px; }
+  .reset-btn { margin-top: 20px; background: none; border: 1px solid #c8102e; color: #c8102e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+
+  @media (min-width: 600px) {
+    main { max-width: 600px; margin: 0 auto; width: 100%; }
+    .tone-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>中文 · Xinès de viatge</h1>
+  <div class="stats" id="stats">0 apreses</div>
+</header>
+
+<nav>
+  <button data-view="phrases" class="active"><span class="ico">💬</span>Frases</button>
+  <button data-view="signs"><span class="ico">🪧</span>Senyals</button>
+  <button data-view="flash"><span class="ico">🃏</span>Targetes</button>
+  <button data-view="quiz"><span class="ico">✍️</span>Test</button>
+  <button data-view="tones"><span class="ico">🎵</span>Tons</button>
+</nav>
+
+<main>
+  <section id="view-phrases" class="view active">
+    <div class="info-block">Toca el botó vermell per escoltar la pronunciació. Repeteix-la en veu alta.</div>
+    <div class="cat-tabs" id="cat-tabs"></div>
+    <div id="phrase-list"></div>
+  </section>
+
+  <section id="view-signs" class="view">
+    <div class="info-block">Caràcters que veuràs als carrers, metro, lavabos, restaurants. Memoritza la <b>forma visual</b>, no t'amoïnis pel pinyin de moment.</div>
+    <div id="signs-list"></div>
+  </section>
+
+  <section id="view-flash" class="view">
+    <div class="flashcard-area">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div id="card-content"></div>
+        <div class="hint" id="card-hint">Toca per girar</div>
+      </div>
+      <div class="grade-row" id="grade-row" style="display:none">
+        <button class="g-bad" onclick="gradeCard(0)">No ho sé</button>
+        <button class="g-ok" onclick="gradeCard(1)">Difícil</button>
+        <button class="g-good" onclick="gradeCard(2)">Fàcil</button>
+      </div>
+    </div>
+    <div style="text-align:center; font-size:12px; color:#888; margin-top:10px;" id="flash-status"></div>
+  </section>
+
+  <section id="view-quiz" class="view">
+    <div class="quiz-question" id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+  </section>
+
+  <section id="view-tones" class="view">
+    <div class="info-block"><b>Els 4 tons del mandarí</b> canvien el significat d'una mateixa síl·laba. <b>mā</b> (mare) ≠ <b>má</b> (cànem) ≠ <b>mǎ</b> (cavall) ≠ <b>mà</b> (renyar). Toca cada to per escoltar-lo.</div>
+    <div class="tone-grid" id="tone-grid"></div>
+    <div class="info-block" style="margin-top:14px; background:#e8f0fe; border-color:#4285f4;">
+      <b>Truc:</b> el to neutre (sense marca) és curt i suau. El primer to és alt i pla com cantar una nota. El segon puja com una pregunta. El tercer baixa i puja. El quart baixa fort i sec.
+    </div>
+  </section>
+</main>
+
+<script>
+// ===== DATA =====
+const PHRASES = {
+  "Bàsic": [
+    {h:"你好", p:"nǐ hǎo", m:"Hola"},
+    {h:"谢谢", p:"xièxie", m:"Gràcies"},
+    {h:"不客气", p:"bú kèqi", m:"De res"},
+    {h:"再见", p:"zàijiàn", m:"Adéu"},
+    {h:"对不起", p:"duìbuqǐ", m:"Perdó / Ho sento"},
+    {h:"没关系", p:"méi guānxi", m:"No passa res"},
+    {h:"是", p:"shì", m:"Sí (és)"},
+    {h:"不是", p:"bú shì", m:"No (no és)"},
+    {h:"对", p:"duì", m:"Correcte / sí"},
+    {h:"好", p:"hǎo", m:"Bé / d'acord"},
+    {h:"请", p:"qǐng", m:"Si us plau"},
+    {h:"我不懂", p:"wǒ bù dǒng", m:"No ho entenc"},
+    {h:"你会说英语吗?", p:"nǐ huì shuō yīngyǔ ma?", m:"Parles anglès?"},
+    {h:"我叫…", p:"wǒ jiào…", m:"Em dic…"},
+    {h:"我是西班牙人", p:"wǒ shì xībānyá rén", m:"Sóc espanyol/a"}
+  ],
+  "Menjar": [
+    {h:"我饿了", p:"wǒ è le", m:"Tinc gana"},
+    {h:"我渴了", p:"wǒ kě le", m:"Tinc set"},
+    {h:"我要这个", p:"wǒ yào zhège", m:"Vull això (assenyalant)"},
+    {h:"菜单", p:"càidān", m:"La carta / menú"},
+    {h:"水", p:"shuǐ", m:"Aigua"},
+    {h:"茶", p:"chá", m:"Te"},
+    {h:"咖啡", p:"kāfēi", m:"Cafè"},
+    {h:"啤酒", p:"píjiǔ", m:"Cervesa"},
+    {h:"米饭", p:"mǐfàn", m:"Arròs"},
+    {h:"面条", p:"miàntiáo", m:"Fideus"},
+    {h:"鸡肉", p:"jīròu", m:"Pollastre"},
+    {h:"牛肉", p:"niúròu", m:"Vedella"},
+    {h:"猪肉", p:"zhūròu", m:"Porc"},
+    {h:"鱼", p:"yú", m:"Peix"},
+    {h:"蔬菜", p:"shūcài", m:"Verdura"},
+    {h:"不要辣", p:"bú yào là", m:"Sense picant"},
+    {h:"很好吃", p:"hěn hǎochī", m:"Molt bo (de menjar)"},
+    {h:"买单", p:"mǎidān", m:"El compte, si us plau"}
+  ],
+  "Compres": [
+    {h:"多少钱?", p:"duōshao qián?", m:"Quant val?"},
+    {h:"太贵了", p:"tài guì le", m:"Massa car"},
+    {h:"便宜一点", p:"piányi yìdiǎn", m:"Una mica més barat"},
+    {h:"我要这个", p:"wǒ yào zhège", m:"Vull aquest"},
+    {h:"我不要", p:"wǒ bú yào", m:"No el vull"},
+    {h:"可以刷卡吗?", p:"kěyǐ shuākǎ ma?", m:"Puc pagar amb targeta?"},
+    {h:"现金", p:"xiànjīn", m:"Efectiu"},
+    {h:"收据", p:"shōujù", m:"Rebut"}
+  ],
+  "Direccions": [
+    {h:"…在哪里?", p:"…zài nǎli?", m:"On és…?"},
+    {h:"洗手间在哪里?", p:"xǐshǒujiān zài nǎli?", m:"On és el lavabo?"},
+    {h:"地铁站", p:"dìtiě zhàn", m:"Estació de metro"},
+    {h:"火车站", p:"huǒchē zhàn", m:"Estació de tren"},
+    {h:"机场", p:"jīchǎng", m:"Aeroport"},
+    {h:"出租车", p:"chūzū chē", m:"Taxi"},
+    {h:"酒店", p:"jiǔdiàn", m:"Hotel"},
+    {h:"左边", p:"zuǒbian", m:"Esquerra"},
+    {h:"右边", p:"yòubian", m:"Dreta"},
+    {h:"直走", p:"zhí zǒu", m:"Recte"},
+    {h:"很远吗?", p:"hěn yuǎn ma?", m:"És lluny?"},
+    {h:"很近", p:"hěn jìn", m:"És a prop"}
+  ],
+  "Emergència": [
+    {h:"救命!", p:"jiùmìng!", m:"Ajuda!"},
+    {h:"小心!", p:"xiǎoxīn!", m:"Compte!"},
+    {h:"医院", p:"yīyuàn", m:"Hospital"},
+    {h:"医生", p:"yīshēng", m:"Metge"},
+    {h:"警察", p:"jǐngchá", m:"Policia"},
+    {h:"我生病了", p:"wǒ shēngbìng le", m:"Estic malalt/a"},
+    {h:"我丢了护照", p:"wǒ diū le hùzhào", m:"He perdut el passaport"},
+    {h:"叫救护车", p:"jiào jiùhùchē", m:"Truca a una ambulància"}
+  ],
+  "Números": [
+    {h:"一", p:"yī", m:"1"},
+    {h:"二", p:"èr", m:"2"},
+    {h:"三", p:"sān", m:"3"},
+    {h:"四", p:"sì", m:"4"},
+    {h:"五", p:"wǔ", m:"5"},
+    {h:"六", p:"liù", m:"6"},
+    {h:"七", p:"qī", m:"7"},
+    {h:"八", p:"bā", m:"8"},
+    {h:"九", p:"jiǔ", m:"9"},
+    {h:"十", p:"shí", m:"10"},
+    {h:"二十", p:"èrshí", m:"20"},
+    {h:"一百", p:"yìbǎi", m:"100"},
+    {h:"一千", p:"yìqiān", m:"1.000"}
+  ]
+};
+
+const SIGNS = [
+  {h:"入口", p:"rùkǒu", m:"Entrada"},
+  {h:"出口", p:"chūkǒu", m:"Sortida"},
+  {h:"男", p:"nán", m:"Homes (lavabo)"},
+  {h:"女", p:"nǚ", m:"Dones (lavabo)"},
+  {h:"洗手间", p:"xǐshǒujiān", m:"Lavabo"},
+  {h:"厕所", p:"cèsuǒ", m:"WC"},
+  {h:"开", p:"kāi", m:"Obert"},
+  {h:"关", p:"guān", m:"Tancat"},
+  {h:"推", p:"tuī", m:"Empenta (porta)"},
+  {h:"拉", p:"lā", m:"Estira (porta)"},
+  {h:"禁止", p:"jìnzhǐ", m:"Prohibit"},
+  {h:"小心", p:"xiǎoxīn", m:"Compte / atenció"},
+  {h:"危险", p:"wēixiǎn", m:"Perill"},
+  {h:"安全出口", p:"ānquán chūkǒu", m:"Sortida d'emergència"},
+  {h:"地铁", p:"dìtiě", m:"Metro"},
+  {h:"火车", p:"huǒchē", m:"Tren"},
+  {h:"飞机", p:"fēijī", m:"Avió"},
+  {h:"银行", p:"yínháng", m:"Banc"},
+  {h:"医院", p:"yīyuàn", m:"Hospital"},
+  {h:"餐厅", p:"cāntīng", m:"Restaurant"},
+  {h:"商店", p:"shāngdiàn", m:"Botiga"},
+  {h:"超市", p:"chāoshì", m:"Supermercat"},
+  {h:"酒店", p:"jiǔdiàn", m:"Hotel"},
+  {h:"机场", p:"jīchǎng", m:"Aeroport"},
+  {h:"中国", p:"zhōngguó", m:"Xina"},
+  {h:"北京", p:"běijīng", m:"Pequín"},
+  {h:"上海", p:"shànghǎi", m:"Xangai"}
+];
+
+const TONES = [
+  {n:1, syl:"mā", desc:"To alt i pla", shape:"→"},
+  {n:2, syl:"má", desc:"Pujant (com pregunta)", shape:"↗"},
+  {n:3, syl:"mǎ", desc:"Baixa i puja", shape:"↘↗"},
+  {n:4, syl:"mà", desc:"Baixant fort i sec", shape:"↘"}
+];
+
+// ===== STATE =====
+const STORE_KEY = "xino_v1";
+let store = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+if (!store.cards) store.cards = {}; // key -> {ease, due, reps}
+if (!store.activeCat) store.activeCat = "Bàsic";
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+
+// All learnable items pooled (phrases + signs)
+function allItems() {
+  const out = [];
+  for (const cat in PHRASES) for (const x of PHRASES[cat]) out.push({...x, src:cat});
+  for (const x of SIGNS) out.push({...x, src:"Senyal"});
+  return out;
+}
+function itemKey(x) { return x.h; }
+
+// ===== TTS =====
+let voicesReady = false;
+function pickVoice() {
+  const vs = speechSynthesis.getVoices();
+  // Prefer zh-CN
+  return vs.find(v => /zh.CN/i.test(v.lang)) || vs.find(v => /zh/i.test(v.lang)) || null;
+}
+speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
+function speak(text, slow=false) {
+  if (!('speechSynthesis' in window)) { alert("El teu navegador no suporta àudio. Prova Chrome o Safari."); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = slow ? 0.65 : 0.85;
+  const v = pickVoice();
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+// ===== NAVIGATION =====
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'flash') nextFlashcard();
+    if (btn.dataset.view === 'quiz') nextQuiz();
+  });
+});
+
+// ===== PHRASES =====
+function renderCats() {
+  const tabs = document.getElementById('cat-tabs');
+  tabs.innerHTML = '';
+  Object.keys(PHRASES).forEach(cat => {
+    const b = document.createElement('button');
+    b.textContent = cat;
+    if (cat === store.activeCat) b.classList.add('active');
+    b.onclick = () => { store.activeCat = cat; save(); renderCats(); renderPhrases(); };
+    tabs.appendChild(b);
+  });
+}
+function renderPhrases() {
+  const list = document.getElementById('phrase-list');
+  list.innerHTML = '';
+  PHRASES[store.activeCat].forEach(x => {
+    list.appendChild(makePhraseCard(x));
+  });
+}
+function makePhraseCard(x) {
+  const card = document.createElement('div');
+  card.className = 'phrase-card';
+  card.innerHTML = `
+    <div class="phrase-text">
+      <div class="hanzi">${x.h}</div>
+      <div class="pinyin">${x.p}</div>
+      <div class="meaning">${x.m}</div>
+    </div>
+    <button class="play-btn" aria-label="Escoltar">▶</button>`;
+  const btn = card.querySelector('.play-btn');
+  let lastTap = 0;
+  btn.onclick = () => {
+    const now = Date.now();
+    const slow = (now - lastTap) < 600;
+    lastTap = now;
+    speak(x.h, slow);
+  };
+  return card;
+}
+
+// ===== SIGNS =====
+function renderSigns() {
+  const wrap = document.getElementById('signs-list');
+  wrap.innerHTML = '';
+  SIGNS.forEach(x => wrap.appendChild(makePhraseCard(x)));
+}
+
+// ===== FLASHCARDS (simple SRS) =====
+let currentCard = null;
+let cardFlipped = false;
+function nextFlashcard() {
+  const items = allItems();
+  // Pick: due cards first (by stored due time), then unseen, then random
+  const now = Date.now();
+  const seen = items.filter(x => store.cards[itemKey(x)]);
+  const unseen = items.filter(x => !store.cards[itemKey(x)]);
+  const due = seen.filter(x => store.cards[itemKey(x)].due <= now);
+  let pool;
+  if (due.length) pool = due;
+  else if (unseen.length) pool = unseen;
+  else pool = seen;
+  currentCard = pool[Math.floor(Math.random() * pool.length)];
+  cardFlipped = false;
+  renderCard();
+  document.getElementById('grade-row').style.display = 'none';
+  updateFlashStatus();
+}
+function renderCard() {
+  if (!currentCard) return;
+  const c = document.getElementById('card-content');
+  if (!cardFlipped) {
+    // Show hanzi only
+    c.innerHTML = `<div class="big-hanzi">${currentCard.h}</div>`;
+    document.getElementById('card-hint').textContent = 'Toca per veure la resposta';
+  } else {
+    c.innerHTML = `
+      <div class="big-hanzi">${currentCard.h}</div>
+      <div class="big-pinyin">${currentCard.p}</div>
+      <div class="big-meaning">${currentCard.m}</div>`;
+    document.getElementById('card-hint').textContent = 'Com t\'ha anat?';
+  }
+}
+function flipCard() {
+  if (!currentCard) return;
+  if (!cardFlipped) {
+    cardFlipped = true;
+    renderCard();
+    speak(currentCard.h);
+    document.getElementById('grade-row').style.display = 'grid';
+  } else {
+    speak(currentCard.h);
+  }
+}
+function gradeCard(grade) {
+  if (!currentCard) return;
+  const k = itemKey(currentCard);
+  const rec = store.cards[k] || {ease:2.0, reps:0, due:0};
+  // grade: 0=fail, 1=hard, 2=good
+  if (grade === 0) { rec.reps = 0; rec.ease = Math.max(1.3, rec.ease - 0.2); }
+  else if (grade === 1) { rec.reps += 1; rec.ease = Math.max(1.3, rec.ease - 0.05); }
+  else { rec.reps += 1; rec.ease = Math.min(2.8, rec.ease + 0.05); }
+  // Interval in minutes for simplicity
+  const intervals = [2, 10, 60, 360, 1440, 4320, 10080]; // 2min, 10min, 1h, 6h, 1d, 3d, 7d
+  const idx = Math.min(rec.reps, intervals.length - 1);
+  const minutes = grade === 0 ? 1 : Math.round(intervals[idx] * rec.ease / 2);
+  rec.due = Date.now() + minutes * 60000;
+  store.cards[k] = rec;
+  save();
+  updateStats();
+  nextFlashcard();
+}
+function updateFlashStatus() {
+  const items = allItems();
+  const seen = items.filter(x => store.cards[itemKey(x)]).length;
+  document.getElementById('flash-status').textContent = `${seen} / ${items.length} vistes`;
+}
+
+// ===== QUIZ =====
+let currentQuiz = null;
+function nextQuiz() {
+  const items = allItems();
+  const correct = items[Math.floor(Math.random() * items.length)];
+  // Random mode: 0 = hanzi -> meaning, 1 = meaning -> hanzi, 2 = hanzi -> pinyin
+  const mode = Math.floor(Math.random() * 3);
+  // Pick 3 wrong options
+  const distractors = [];
+  while (distractors.length < 3) {
+    const cand = items[Math.floor(Math.random() * items.length)];
+    if (cand.h !== correct.h && !distractors.find(d => d.h === cand.h)) distractors.push(cand);
+  }
+  const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+  currentQuiz = {correct, mode, options};
+  renderQuiz();
+}
+function renderQuiz() {
+  const {correct, mode, options} = currentQuiz;
+  const q = document.getElementById('quiz-question');
+  let label, prompt, promptCls = '';
+  if (mode === 0) { label = 'Què significa?'; prompt = correct.h; }
+  else if (mode === 1) { label = 'Com s\'escriu?'; prompt = correct.m; promptCls = 'small'; }
+  else { label = 'Com es pronuncia?'; prompt = correct.h; }
+  q.innerHTML = `<div class="quiz-prompt-label">${label}</div><div class="quiz-prompt ${promptCls}">${prompt}</div>`;
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  document.getElementById('quiz-feedback').textContent = '';
+  options.forEach(o => {
+    const b = document.createElement('button');
+    if (mode === 0) b.textContent = o.m;
+    else if (mode === 1) b.textContent = o.h;
+    else b.textContent = o.p;
+    b.onclick = () => answerQuiz(b, o);
+    opts.appendChild(b);
+  });
+  // Auto-play audio in mode 2
+  if (mode === 2) setTimeout(() => speak(correct.h), 300);
+}
+function answerQuiz(btn, chosen) {
+  const {correct} = currentQuiz;
+  const buttons = document.querySelectorAll('#quiz-options button');
+  buttons.forEach(b => b.disabled = true);
+  if (chosen.h === correct.h) {
+    btn.classList.add('correct');
+    document.getElementById('quiz-feedback').innerHTML = `✓ Correcte — <b>${correct.h}</b> ${correct.p} (${correct.m})`;
+    speak(correct.h);
+    // Track as seen/correct
+    const k = itemKey(correct);
+    const rec = store.cards[k] || {ease:2.0, reps:0, due:0};
+    rec.reps = (rec.reps || 0) + 1;
+    rec.due = Date.now() + 60 * 60000;
+    store.cards[k] = rec;
+    save();
+    updateStats();
+  } else {
+    btn.classList.add('wrong');
+    buttons.forEach(b => {
+      if (b.textContent === correct.m || b.textContent === correct.h || b.textContent === correct.p) b.classList.add('correct');
+    });
+    document.getElementById('quiz-feedback').innerHTML = `✗ Era <b>${correct.h}</b> ${correct.p} (${correct.m})`;
+  }
+  setTimeout(nextQuiz, 1800);
+}
+
+// ===== TONES =====
+function renderTones() {
+  const grid = document.getElementById('tone-grid');
+  grid.innerHTML = '';
+  TONES.forEach(t => {
+    const c = document.createElement('div');
+    c.className = 'tone-card';
+    c.innerHTML = `
+      <div class="tone-num">${t.n}</div>
+      <div class="tone-shape">${t.shape}</div>
+      <div class="tone-syl">${t.syl}</div>
+      <div class="tone-desc">${t.desc}</div>`;
+    c.onclick = () => speak(t.syl);
+    grid.appendChild(c);
+  });
+}
+
+// ===== STATS =====
+function updateStats() {
+  const items = allItems();
+  const seen = items.filter(x => store.cards[itemKey(x)] && store.cards[itemKey(x)].reps > 0).length;
+  document.getElementById('stats').textContent = `${seen} apreses`;
+}
+
+// ===== INIT =====
+renderCats();
+renderPhrases();
+renderSigns();
+renderTones();
+updateStats();
+
+// Warm up TTS engine
+setTimeout(() => { speechSynthesis.getVoices(); }, 200);
+</script>
+</body>
+</html>
