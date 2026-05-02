@@ -34,7 +34,7 @@
   header .stats { font-size: 12px; opacity: 0.85; }
   nav {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background: #fff;
     border-bottom: 1px solid #e5e0d6;
     position: sticky;
@@ -44,8 +44,8 @@
   nav button {
     background: none;
     border: none;
-    padding: 10px 4px;
-    font-size: 11px;
+    padding: 10px 2px;
+    font-size: 10px;
     cursor: pointer;
     color: #666;
     border-bottom: 3px solid transparent;
@@ -233,6 +233,151 @@
     main { max-width: 600px; margin: 0 auto; width: 100%; }
     .tone-grid { grid-template-columns: repeat(4, 1fr); }
   }
+
+  /* Reels */
+  #view-reels { padding: 0; margin: -14px; margin-bottom: 0; }
+  .reel-stage {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 50px - 70px - 0px);
+    min-height: 480px;
+    overflow: hidden;
+    background: #000;
+  }
+  .reel-progress {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 4;
+  }
+  .reel-progress .bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .reel-progress .bar > i {
+    display: block;
+    height: 100%;
+    background: #fff;
+    width: 0;
+    transition: width 0.1s linear;
+  }
+  .reel-card {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 36px 24px 80px;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+  }
+  .reel-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    transition: background 0.5s ease;
+  }
+  .reel-bg::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(0,0,0,0.25), transparent 50%);
+  }
+  .reel-emoji {
+    font-size: 90px;
+    margin-top: 10px;
+    margin-bottom: 14px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    z-index: 1;
+    animation: bob 3s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .reel-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 1;
+    letter-spacing: 0.3px;
+  }
+  .reel-lines {
+    width: 100%;
+    max-width: 360px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .reel-bubble {
+    background: rgba(255,255,255,0.95);
+    color: #222;
+    padding: 12px 14px;
+    border-radius: 16px;
+    text-align: left;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    animation: bubblePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    max-width: 88%;
+  }
+  .reel-bubble.you {
+    align-self: flex-end;
+    background: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .reel-bubble.them {
+    align-self: flex-start;
+    background: #ffe9b3;
+    border-bottom-left-radius: 4px;
+  }
+  .reel-bubble.faded { opacity: 0.55; transform: scale(0.96); }
+  .reel-bubble .who {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+  .reel-bubble .b-hanzi { font-size: 22px; font-weight: 500; line-height: 1.25; }
+  .reel-bubble .b-pinyin { font-size: 13px; color: #c8102e; font-style: italic; margin-top: 2px; }
+  .reel-bubble .b-meaning { font-size: 12px; color: #666; margin-top: 4px; }
+  @keyframes bubblePop {
+    from { opacity: 0; transform: translateY(12px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .reel-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    z-index: 1;
+    letter-spacing: 0.5px;
+  }
+  .reel-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 35%;
+    z-index: 3;
+    cursor: pointer;
+  }
+  .reel-zone-left { left: 0; }
+  .reel-zone-right { right: 0; width: 65%; }
 </style>
 </head>
 <body>
@@ -243,7 +388,8 @@
 </header>
 
 <nav>
-  <button data-view="phrases" class="active"><span class="ico">💬</span>Frases</button>
+  <button data-view="reels" class="active"><span class="ico">🎬</span>Reels</button>
+  <button data-view="phrases"><span class="ico">💬</span>Frases</button>
   <button data-view="signs"><span class="ico">🪧</span>Senyals</button>
   <button data-view="flash"><span class="ico">🃏</span>Targetes</button>
   <button data-view="quiz"><span class="ico">✍️</span>Test</button>
@@ -251,7 +397,22 @@
 </nav>
 
 <main>
-  <section id="view-phrases" class="view active">
+  <section id="view-reels" class="view active">
+    <div class="reel-stage" id="reel-stage">
+      <div class="reel-progress" id="reel-progress"></div>
+      <div class="reel-card" id="reel-card">
+        <div class="reel-bg" id="reel-bg"></div>
+        <div class="reel-emoji" id="reel-emoji">🎬</div>
+        <div class="reel-title" id="reel-title">Toca per començar</div>
+        <div class="reel-lines" id="reel-lines"></div>
+        <div class="reel-hint" id="reel-hint">← anterior · següent →</div>
+      </div>
+      <div class="reel-zone reel-zone-left" id="reel-prev"></div>
+      <div class="reel-zone reel-zone-right" id="reel-next"></div>
+    </div>
+  </section>
+
+  <section id="view-phrases" class="view">
     <div class="info-block">Toca el botó vermell per escoltar la pronunciació. Repeteix-la en veu alta.</div>
     <div class="cat-tabs" id="cat-tabs"></div>
     <div id="phrase-list"></div>
@@ -462,6 +623,8 @@ document.querySelectorAll('nav button').forEach(btn => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    stopReels();
+    if (btn.dataset.view === 'reels') startReels();
     if (btn.dataset.view === 'flash') nextFlashcard();
     if (btn.dataset.view === 'quiz') nextQuiz();
   });
@@ -665,6 +828,239 @@ function renderTones() {
     grid.appendChild(c);
   });
 }
+
+// ===== REELS =====
+const REELS = [
+  {
+    title: "Al taxi",
+    emoji: "🚕",
+    bg: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+    lines: [
+      {who:"Tu", h:"你好!", p:"Nǐ hǎo!", m:"Hola!"},
+      {who:"Tu", h:"去机场", p:"Qù jīchǎng", m:"A l'aeroport"},
+      {who:"Taxista", h:"好的!", p:"Hǎo de!", m:"D'acord!"},
+      {who:"Tu", h:"多少钱?", p:"Duōshao qián?", m:"Quant val?"}
+    ]
+  },
+  {
+    title: "Al mercat",
+    emoji: "🥬",
+    bg: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+    lines: [
+      {who:"Venedor", h:"你要什么?", p:"Nǐ yào shénme?", m:"Què vols?"},
+      {who:"Tu", h:"我要苹果", p:"Wǒ yào píngguǒ", m:"Vull pomes"},
+      {who:"Tu", h:"多少钱?", p:"Duōshao qián?", m:"Quant val?"},
+      {who:"Venedor", h:"十块", p:"Shí kuài", m:"10 iuans"},
+      {who:"Tu", h:"好, 谢谢!", p:"Hǎo, xièxie!", m:"D'acord, gràcies!"}
+    ]
+  },
+  {
+    title: "Demanant un te",
+    emoji: "🍵",
+    bg: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    lines: [
+      {who:"Cambrer", h:"您好!", p:"Nín hǎo!", m:"Hola! (formal)"},
+      {who:"Tu", h:"我要茶", p:"Wǒ yào chá", m:"Vull te"},
+      {who:"Cambrer", h:"绿茶吗?", p:"Lǜchá ma?", m:"Te verd?"},
+      {who:"Tu", h:"对, 谢谢!", p:"Duì, xièxie!", m:"Sí, gràcies!"}
+    ]
+  },
+  {
+    title: "Massa picant!",
+    emoji: "🌶️",
+    bg: "linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)",
+    lines: [
+      {who:"Tu", h:"啊!", p:"Ā!", m:"Ah!"},
+      {who:"Tu", h:"太辣了!", p:"Tài là le!", m:"Massa picant!"},
+      {who:"Tu", h:"水! 水!", p:"Shuǐ! Shuǐ!", m:"Aigua! Aigua!"},
+      {who:"Cambrer", h:"对不起!", p:"Duìbuqǐ!", m:"Ho sento!"}
+    ]
+  },
+  {
+    title: "El lavabo, urgent!",
+    emoji: "🚻",
+    bg: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    lines: [
+      {who:"Tu", h:"不好意思", p:"Bù hǎoyìsi", m:"Disculpi"},
+      {who:"Tu", h:"洗手间在哪里?", p:"Xǐshǒujiān zài nǎli?", m:"On és el lavabo?"},
+      {who:"Persona", h:"在那里", p:"Zài nàli", m:"Allà"},
+      {who:"Tu", h:"谢谢!", p:"Xièxie!", m:"Gràcies!"}
+    ]
+  },
+  {
+    title: "Regatejant",
+    emoji: "💰",
+    bg: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+    lines: [
+      {who:"Tu", h:"这个多少钱?", p:"Zhège duōshao qián?", m:"Quant val això?"},
+      {who:"Botiguer", h:"五十块", p:"Wǔshí kuài", m:"50 iuans"},
+      {who:"Tu", h:"太贵了!", p:"Tài guì le!", m:"Massa car!"},
+      {who:"Tu", h:"便宜一点?", p:"Piányi yìdiǎn?", m:"Una mica més barat?"},
+      {who:"Botiguer", h:"四十", p:"Sìshí", m:"40"},
+      {who:"Tu", h:"好!", p:"Hǎo!", m:"Bé!"}
+    ]
+  },
+  {
+    title: "Una cervesa, freda!",
+    emoji: "🍺",
+    bg: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    lines: [
+      {who:"Tu", h:"一瓶啤酒", p:"Yì píng píjiǔ", m:"Una cervesa"},
+      {who:"Cambrer", h:"冰的吗?", p:"Bīng de ma?", m:"Freda?"},
+      {who:"Tu", h:"对!", p:"Duì!", m:"Sí!"},
+      {who:"Tu", h:"干杯!", p:"Gānbēi!", m:"Salut!"}
+    ]
+  },
+  {
+    title: "M'he perdut",
+    emoji: "🗺️",
+    bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    lines: [
+      {who:"Tu", h:"我迷路了", p:"Wǒ mílù le", m:"M'he perdut"},
+      {who:"Persona", h:"你要去哪里?", p:"Nǐ yào qù nǎli?", m:"On vas?"},
+      {who:"Tu", h:"我的酒店", p:"Wǒ de jiǔdiàn", m:"Al meu hotel"},
+      {who:"Persona", h:"很近, 直走", p:"Hěn jìn, zhí zǒu", m:"És a prop, recte"}
+    ]
+  },
+  {
+    title: "Trobada al carrer",
+    emoji: "👋",
+    bg: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    lines: [
+      {who:"Persona", h:"你好!", p:"Nǐ hǎo!", m:"Hola!"},
+      {who:"Persona", h:"你是哪国人?", p:"Nǐ shì nǎ guó rén?", m:"De quin país ets?"},
+      {who:"Tu", h:"我是西班牙人", p:"Wǒ shì xībānyá rén", m:"Sóc espanyol/a"},
+      {who:"Persona", h:"欢迎!", p:"Huānyíng!", m:"Benvingut/da!"}
+    ]
+  },
+  {
+    title: "El compte!",
+    emoji: "🧾",
+    bg: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    lines: [
+      {who:"Tu", h:"服务员!", p:"Fúwùyuán!", m:"Cambrer!"},
+      {who:"Tu", h:"买单!", p:"Mǎidān!", m:"El compte!"},
+      {who:"Cambrer", h:"一百块", p:"Yìbǎi kuài", m:"100 iuans"},
+      {who:"Tu", h:"很好吃, 谢谢!", p:"Hěn hǎochī, xièxie!", m:"Molt bo, gràcies!"}
+    ]
+  },
+  {
+    title: "Foto a la muralla!",
+    emoji: "🏯",
+    bg: "linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)",
+    lines: [
+      {who:"Tu", h:"哇!", p:"Wā!", m:"Uau!"},
+      {who:"Tu", h:"太漂亮了!", p:"Tài piàoliang le!", m:"És preciós!"},
+      {who:"Amic", h:"拍照吧!", p:"Pāizhào ba!", m:"Fem una foto!"},
+      {who:"Tu", h:"一, 二, 三!", p:"Yī, èr, sān!", m:"Un, dos, tres!"}
+    ]
+  },
+  {
+    title: "Al metro",
+    emoji: "🚇",
+    bg: "linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 100%)",
+    lines: [
+      {who:"Tu", h:"地铁站在哪里?", p:"Dìtiě zhàn zài nǎli?", m:"On és l'estació de metro?"},
+      {who:"Persona", h:"在前面", p:"Zài qiánmiàn", m:"Davant"},
+      {who:"Tu", h:"一张票", p:"Yì zhāng piào", m:"Un bitllet"},
+      {who:"Tu", h:"谢谢!", p:"Xièxie!", m:"Gràcies!"}
+    ]
+  }
+];
+
+let reelIdx = 0, lineIdx = 0;
+let reelTimer = null;
+let reelsActive = false;
+const REEL_LINE_MS = 2800;
+function renderReel() {
+  const r = REELS[reelIdx];
+  document.getElementById('reel-bg').style.background = r.bg;
+  document.getElementById('reel-emoji').textContent = r.emoji;
+  document.getElementById('reel-title').textContent = r.title;
+  // Progress bars
+  const prog = document.getElementById('reel-progress');
+  prog.innerHTML = '';
+  REELS.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const fill = document.createElement('i');
+    if (i < reelIdx) fill.style.width = '100%';
+    else if (i === reelIdx) fill.style.width = ((lineIdx + 1) / r.lines.length * 100) + '%';
+    else fill.style.width = '0%';
+    bar.appendChild(fill);
+    prog.appendChild(bar);
+  });
+  // Lines (show all up to current, with last one prominent)
+  const linesEl = document.getElementById('reel-lines');
+  linesEl.innerHTML = '';
+  for (let i = 0; i <= lineIdx; i++) {
+    const ln = r.lines[i];
+    const b = document.createElement('div');
+    b.className = 'reel-bubble ' + (ln.who === 'Tu' ? 'you' : 'them');
+    if (i < lineIdx) b.classList.add('faded');
+    b.innerHTML = `
+      <div class="who">${ln.who}</div>
+      <div class="b-hanzi">${ln.h}</div>
+      <div class="b-pinyin">${ln.p}</div>
+      <div class="b-meaning">${ln.m}</div>`;
+    linesEl.appendChild(b);
+  }
+  // Speak current line
+  const cur = r.lines[lineIdx];
+  if (cur) speak(cur.h);
+  // Track as seen
+  if (cur) {
+    const k = cur.h;
+    const rec = store.cards[k] || {ease:2.0, reps:0, due:0};
+    rec.reps = (rec.reps || 0) + 1;
+    rec.due = Date.now() + 30 * 60000;
+    store.cards[k] = rec;
+    save();
+    updateStats();
+  }
+}
+function reelAdvance() {
+  const r = REELS[reelIdx];
+  if (lineIdx < r.lines.length - 1) {
+    lineIdx++;
+  } else {
+    reelIdx = (reelIdx + 1) % REELS.length;
+    lineIdx = 0;
+  }
+  renderReel();
+  scheduleReelTick();
+}
+function reelBack() {
+  if (lineIdx > 0) {
+    lineIdx--;
+  } else {
+    reelIdx = (reelIdx - 1 + REELS.length) % REELS.length;
+    lineIdx = REELS[reelIdx].lines.length - 1;
+  }
+  renderReel();
+  scheduleReelTick();
+}
+function scheduleReelTick() {
+  clearTimeout(reelTimer);
+  reelTimer = setTimeout(reelAdvance, REEL_LINE_MS);
+}
+function startReels() {
+  reelIdx = 0; lineIdx = 0;
+  reelsActive = true;
+  renderReel();
+  scheduleReelTick();
+}
+function stopReels() {
+  clearTimeout(reelTimer);
+  reelsActive = false;
+  speechSynthesis.cancel();
+}
+document.getElementById('reel-next').addEventListener('click', () => {
+  if (!reelsActive) startReels(); else reelAdvance();
+});
+document.getElementById('reel-prev').addEventListener('click', () => {
+  if (!reelsActive) startReels(); else reelBack();
+});
 
 // ===== STATS =====
 function updateStats() {
