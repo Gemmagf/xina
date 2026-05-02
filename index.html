@@ -443,6 +443,28 @@
   }
   .reel-zone-left { left: 0; }
   .reel-zone-right { right: 0; width: 65%; }
+  .reel-pause {
+    position: absolute;
+    top: 18px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    z-index: 5;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .reel-pause:active { transform: scale(0.92); }
+  .reel-pause.paused { background: rgba(255,94,124,0.85); }
 </style>
 </head>
 <body>
@@ -473,6 +495,7 @@
         <div class="reel-lines" id="reel-lines"></div>
         <div class="reel-hint" id="reel-hint">← anterior · següent →</div>
       </div>
+      <button class="reel-pause" id="reel-pause" aria-label="Pausa">⏸</button>
       <div class="reel-zone reel-zone-left" id="reel-prev"></div>
       <div class="reel-zone reel-zone-right" id="reel-next"></div>
     </div>
@@ -827,18 +850,37 @@ function itemKey(x) { return x.h; }
 
 // ===== TTS =====
 let voicesReady = false;
+let cachedVoice = null;
 function pickVoice() {
+  if (cachedVoice) return cachedVoice;
   const vs = speechSynthesis.getVoices();
-  // Prefer zh-CN
-  return vs.find(v => /zh.CN/i.test(v.lang)) || vs.find(v => /zh/i.test(v.lang)) || null;
+  if (!vs.length) return null;
+  const zh = vs.filter(v => /zh/i.test(v.lang));
+  if (!zh.length) return null;
+  // Score voices: prefer enhanced/premium/neural names, prefer female default Chinese voices
+  const score = (v) => {
+    let s = 0;
+    const n = (v.name || '').toLowerCase();
+    if (/premium|enhanced|natural|neural/.test(n)) s += 100;
+    if (/tingting|mei.?jia|sin.?ji|google.*?(普通话|mandarin|chinese)|yaoyao|huihui|xiaoxiao|yunyang/i.test(v.name)) s += 50;
+    if (/zh.CN/i.test(v.lang)) s += 20;
+    if (/female/i.test(n)) s += 10;
+    if (v.localService) s += 5;
+    if (v.default) s += 2;
+    return s;
+  };
+  zh.sort((a, b) => score(b) - score(a));
+  cachedVoice = zh[0];
+  return cachedVoice;
 }
-speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
+speechSynthesis.onvoiceschanged = () => { voicesReady = true; cachedVoice = null; pickVoice(); };
 function speak(text, slow=false) {
-  if (!('speechSynthesis' in window)) { alert("El teu navegador no suporta àudio. Prova Chrome o Safari."); return; }
+  if (!('speechSynthesis' in window)) { return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-CN';
-  u.rate = slow ? 0.65 : 0.85;
+  u.rate = slow ? 0.7 : 0.92;
+  u.pitch = 1.0;
   const v = pickVoice();
   if (v) u.voice = v;
   speechSynthesis.speak(u);
@@ -851,8 +893,8 @@ document.querySelectorAll('nav button').forEach(btn => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('view-' + btn.dataset.view).classList.add('active');
-    stopReels();
-    if (btn.dataset.view === 'reels') startReels();
+    if (btn.dataset.view === 'reels') enterReelsView();
+    else leaveReelsView();
     if (btn.dataset.view === 'flash') nextFlashcard();
     if (btn.dataset.view === 'quiz') nextQuiz();
     if (btn.dataset.view === 'read') renderReading();
@@ -1217,6 +1259,82 @@ const READINGS = [
       {h:"练习", p:"liànxí", m:"practicar"},
       {h:"希望", p:"xīwàng", m:"esperar, desitjar"}
     ]
+  },
+  {
+    title: "Al restaurant amb amics",
+    level: "A2-B1",
+    intro: "Una nit fora amb amics. Demanar plats per compartir.",
+    lines: [
+      {h:"昨天晚上我和朋友去吃饭。", p:"Zuótiān wǎnshang wǒ hé péngyou qù chī fàn.", m:"Ahir al vespre vaig anar a sopar amb amics."},
+      {h:"我们去了一家四川餐厅。", p:"Wǒmen qù le yì jiā Sìchuān cāntīng.", m:"Vam anar a un restaurant sichuanès."},
+      {h:"四川菜很辣, 我有点害怕。", p:"Sìchuān cài hěn là, wǒ yǒudiǎn hàipà.", m:"El menjar de Sichuan és picant, em feia una mica de por."},
+      {h:"我们点了麻婆豆腐和水煮鱼。", p:"Wǒmen diǎn le mápó dòufu hé shuǐzhǔ yú.", m:"Vam demanar mapo tofu i peix bullit picant."},
+      {h:"虽然辣, 但是很好吃。", p:"Suīrán là, dànshì hěn hǎochī.", m:"Tot i ser picant, era molt bo."},
+      {h:"我们聊天, 喝啤酒, 笑了很久。", p:"Wǒmen liáotiān, hē píjiǔ, xiào le hěn jiǔ.", m:"Vam xerrar, beure cervesa i riure molta estona."}
+    ],
+    vocab: [
+      {h:"和", p:"hé", m:"i, amb"},
+      {h:"点", p:"diǎn", m:"demanar (al restaurant)"},
+      {h:"虽然...但是", p:"suīrán... dànshì", m:"tot i que... però"},
+      {h:"聊天", p:"liáotiān", m:"xerrar"}
+    ]
+  },
+  {
+    title: "Visitant la Gran Muralla",
+    level: "B1",
+    intro: "Una excursió a un dels llocs més icònics de la Xina.",
+    lines: [
+      {h:"长城是世界上最长的城墙。", p:"Chángchéng shì shìjiè shàng zuì cháng de chéngqiáng.", m:"La Gran Muralla és el mur més llarg del món."},
+      {h:"上周末, 我和朋友一起去了长城。", p:"Shàng zhōumò, wǒ hé péngyou yìqǐ qù le Chángchéng.", m:"El cap de setmana passat vaig anar-hi amb amics."},
+      {h:"我们坐了两个小时的车。", p:"Wǒmen zuò le liǎng ge xiǎoshí de chē.", m:"Hi vam anar amb cotxe dues hores."},
+      {h:"风景非常美, 但是台阶很多。", p:"Fēngjǐng fēicháng měi, dànshì táijiē hěn duō.", m:"El paisatge és preciós, però hi ha molts esglaons."},
+      {h:"爬上去以后, 我累得不想动。", p:"Pá shàngqù yǐhòu, wǒ lèi de bù xiǎng dòng.", m:"Després de pujar estava massa cansada per moure'm."},
+      {h:"但是, 这是难忘的一天。", p:"Dànshì, zhè shì nánwàng de yì tiān.", m:"Però va ser un dia inoblidable."}
+    ],
+    vocab: [
+      {h:"世界", p:"shìjiè", m:"món"},
+      {h:"上...的车", p:"zuò chē", m:"agafar el cotxe (durada)"},
+      {h:"风景", p:"fēngjǐng", m:"paisatge"},
+      {h:"难忘", p:"nánwàng", m:"inoblidable"}
+    ]
+  },
+  {
+    title: "Recepta — fideus saltats",
+    level: "A2",
+    intro: "Una recepta senzilla de cuina xinesa.",
+    lines: [
+      {h:"今天我要做炒面。", p:"Jīntiān wǒ yào zuò chǎomiàn.", m:"Avui faré fideus saltats."},
+      {h:"先煮面, 然后倒掉水。", p:"Xiān zhǔ miàn, ránhòu dàodiào shuǐ.", m:"Primer bullo els fideus i escorro l'aigua."},
+      {h:"切一些葱, 蒜, 和蔬菜。", p:"Qiē yìxiē cōng, suàn, hé shūcài.", m:"Tallo ceba tendra, all i verdures."},
+      {h:"在锅里加油, 炒一炒。", p:"Zài guō li jiā yóu, chǎo yi chǎo.", m:"Poso oli a la paella i ho saltejo."},
+      {h:"加面条, 酱油, 一点盐。", p:"Jiā miàntiáo, jiàngyóu, yìdiǎn yán.", m:"Afegeixo els fideus, salsa de soja i una mica de sal."},
+      {h:"五分钟以后, 就可以吃了!", p:"Wǔ fēnzhōng yǐhòu, jiù kěyǐ chī le!", m:"Al cap de cinc minuts, ja es pot menjar!"}
+    ],
+    vocab: [
+      {h:"先...然后", p:"xiān... ránhòu", m:"primer... després"},
+      {h:"切", p:"qiē", m:"tallar"},
+      {h:"加", p:"jiā", m:"afegir"},
+      {h:"酱油", p:"jiàngyóu", m:"salsa de soja"}
+    ]
+  },
+  {
+    title: "Una trucada al banc",
+    level: "B1",
+    intro: "Resoldre un problema bancari per telèfon.",
+    lines: [
+      {h:"喂, 我的银行卡不能用了。", p:"Wèi, wǒ de yínhángkǎ bù néng yòng le.", m:"Hola, la meva targeta no funciona."},
+      {h:"请告诉我您的卡号。", p:"Qǐng gàosu wǒ nín de kǎhào.", m:"Doni'm el número de la targeta, si us plau."},
+      {h:"卡号是六二二八开头的。", p:"Kǎhào shì liù èr èr bā kāitóu de.", m:"Comença per 6228."},
+      {h:"您可能输错了密码三次。", p:"Nín kěnéng shū cuò le mìmǎ sān cì.", m:"Potser ha errat la contrasenya tres vegades."},
+      {h:"怎么办?", p:"Zěnme bàn?", m:"Què faig?"},
+      {h:"请去银行办理, 带上身份证。", p:"Qǐng qù yínháng bànlǐ, dài shàng shēnfènzhèng.", m:"Vagi al banc amb el DNI."}
+    ],
+    vocab: [
+      {h:"卡号", p:"kǎhào", m:"número de targeta"},
+      {h:"输错", p:"shū cuò", m:"introduir malament"},
+      {h:"办理", p:"bànlǐ", m:"tramitar"},
+      {h:"身份证", p:"shēnfènzhèng", m:"DNI"}
+    ]
   }
 ];
 
@@ -1547,13 +1665,159 @@ const REELS = [
       {who:"Taquilla", h:"高铁还是动车?", p:"Gāotiě háishi dòngchē?", m:"AVE o tren ràpid?"},
       {who:"Tu", h:"高铁, 一张票", p:"Gāotiě, yì zhāng piào", m:"AVE, un bitllet"}
     ]
+  },
+  {
+    title: "Pagant amb el mòbil",
+    emoji: "📱",
+    bg: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+    lines: [
+      {who:"Cambrer", h:"一共三十块", p:"Yígòng sānshí kuài", m:"Total 30 iuans"},
+      {who:"Tu", h:"可以扫码吗?", p:"Kěyǐ sǎo mǎ ma?", m:"Es pot escanejar QR?"},
+      {who:"Cambrer", h:"可以, 微信支付宝都行", p:"Kěyǐ, wēixìn zhīfùbǎo dōu xíng", m:"Sí, WeChat o Alipay"},
+      {who:"Tu", h:"好, 我用支付宝", p:"Hǎo, wǒ yòng zhīfùbǎo", m:"D'acord, faig servir Alipay"}
+    ]
+  },
+  {
+    title: "Demanant fer-se una foto",
+    emoji: "📸",
+    bg: "linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%)",
+    lines: [
+      {who:"Tu", h:"不好意思", p:"Bù hǎoyìsi", m:"Disculpi"},
+      {who:"Tu", h:"可以帮我们拍照吗?", p:"Kěyǐ bāng wǒmen pāizhào ma?", m:"Ens pot fer una foto?"},
+      {who:"Persona", h:"当然可以!", p:"Dāngrán kěyǐ!", m:"És clar!"},
+      {who:"Persona", h:"准备好了吗?", p:"Zhǔnbèi hǎo le ma?", m:"Llestos?"},
+      {who:"Tu", h:"准备好了!", p:"Zhǔnbèi hǎo le!", m:"Sí!"}
+    ]
+  },
+  {
+    title: "Al museu",
+    emoji: "🏛️",
+    bg: "linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%)",
+    lines: [
+      {who:"Tu", h:"门票多少钱?", p:"Ménpiào duōshao qián?", m:"Quant val l'entrada?"},
+      {who:"Taquilla", h:"五十块, 学生半价", p:"Wǔshí kuài, xuésheng bànjià", m:"50 iuans, mig preu per estudiants"},
+      {who:"Tu", h:"有英文导览吗?", p:"Yǒu yīngwén dǎolǎn ma?", m:"Hi ha guia en anglès?"},
+      {who:"Taquilla", h:"有, 在那边", p:"Yǒu, zài nàbiān", m:"Sí, allà"}
+    ]
+  },
+  {
+    title: "Massatge xinès",
+    emoji: "💆",
+    bg: "linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)",
+    lines: [
+      {who:"Massatgista", h:"哪里疼?", p:"Nǎli téng?", m:"On li fa mal?"},
+      {who:"Tu", h:"我的肩膀很累", p:"Wǒ de jiānbǎng hěn lèi", m:"Em fan mal les espatlles"},
+      {who:"Massatgista", h:"力度怎么样?", p:"Lìdù zěnmeyàng?", m:"La pressió, com?"},
+      {who:"Tu", h:"轻一点, 谢谢", p:"Qīng yìdiǎn, xièxie", m:"Una mica més fluixa, gràcies"}
+    ]
+  },
+  {
+    title: "Tornant un producte",
+    emoji: "↩️",
+    bg: "linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%)",
+    lines: [
+      {who:"Tu", h:"我想退货", p:"Wǒ xiǎng tuìhuò", m:"Vull retornar això"},
+      {who:"Botiguer", h:"有什么问题?", p:"Yǒu shénme wèntí?", m:"Quin problema hi ha?"},
+      {who:"Tu", h:"太大了, 不合适", p:"Tài dà le, bù héshì", m:"Massa gran, no em va bé"},
+      {who:"Botiguer", h:"可以换小一号", p:"Kěyǐ huàn xiǎo yí hào", m:"Pot canviar-lo per una talla menys"}
+    ]
+  },
+  {
+    title: "Al supermercat",
+    emoji: "🛒",
+    bg: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    lines: [
+      {who:"Tu", h:"请问, 牛奶在哪里?", p:"Qǐng wèn, niúnǎi zài nǎli?", m:"Disculpi, on és la llet?"},
+      {who:"Empleat", h:"在第三排", p:"Zài dì sān pái", m:"A la tercera fila"},
+      {who:"Tu", h:"谢谢!", p:"Xièxie!", m:"Gràcies!"},
+      {who:"Tu", h:"还要一袋苹果", p:"Hái yào yí dài píngguǒ", m:"També una bossa de pomes"}
+    ]
+  },
+  {
+    title: "Demanant per emportar",
+    emoji: "🥡",
+    bg: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+    lines: [
+      {who:"Tu", h:"我要外卖", p:"Wǒ yào wàimài", m:"Vull menjar per emportar"},
+      {who:"Cambrer", h:"要什么?", p:"Yào shénme?", m:"Què vol?"},
+      {who:"Tu", h:"两份炒面", p:"Liǎng fèn chǎomiàn", m:"Dos plats de fideus saltats"},
+      {who:"Cambrer", h:"二十分钟好", p:"Èrshí fēnzhōng hǎo", m:"Estarà en 20 minuts"}
+    ]
+  },
+  {
+    title: "Compliments",
+    emoji: "🌸",
+    bg: "linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)",
+    lines: [
+      {who:"Amic", h:"你今天很漂亮!", p:"Nǐ jīntiān hěn piàoliang!", m:"Avui estàs molt guapa!"},
+      {who:"Tu", h:"谢谢, 你也是!", p:"Xièxie, nǐ yě shì!", m:"Gràcies, tu també!"},
+      {who:"Amic", h:"你的中文进步很快", p:"Nǐ de zhōngwén jìnbù hěn kuài", m:"El teu xinès avança ràpid"},
+      {who:"Tu", h:"哪里哪里", p:"Nǎli nǎli", m:"Què va (modèstia)"}
+    ]
+  },
+  {
+    title: "Amics — quedem?",
+    emoji: "🤝",
+    bg: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+    lines: [
+      {who:"Tu", h:"今晚有空吗?", p:"Jīn wǎn yǒu kòng ma?", m:"Tens estona aquesta nit?"},
+      {who:"Amic", h:"有! 怎么了?", p:"Yǒu! Zěnme le?", m:"Sí! Què passa?"},
+      {who:"Tu", h:"一起吃晚饭?", p:"Yìqǐ chī wǎnfàn?", m:"Sopem junts?"},
+      {who:"Amic", h:"好啊, 在哪里见?", p:"Hǎo a, zài nǎli jiàn?", m:"Sí, on quedem?"},
+      {who:"Tu", h:"七点, 王府井", p:"Qī diǎn, Wángfǔjǐng", m:"Les 7, a Wangfujing"}
+    ]
+  },
+  {
+    title: "Al barber/perruquer",
+    emoji: "💇",
+    bg: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+    lines: [
+      {who:"Perruquer", h:"想剪什么样的?", p:"Xiǎng jiǎn shénmeyàng de?", m:"Quin tall vol?"},
+      {who:"Tu", h:"短一点, 不要太短", p:"Duǎn yìdiǎn, bú yào tài duǎn", m:"Una mica més curt, no massa"},
+      {who:"Perruquer", h:"好的, 看看这个?", p:"Hǎo de, kànkan zhège?", m:"Aquest us agrada?"},
+      {who:"Tu", h:"可以, 就这样", p:"Kěyǐ, jiù zhèyàng", m:"Sí, així va bé"}
+    ]
+  },
+  {
+    title: "Conduint un Didi (taxi-app)",
+    emoji: "🚙",
+    bg: "linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)",
+    lines: [
+      {who:"Conductor", h:"您好, 是去机场吗?", p:"Nín hǎo, shì qù jīchǎng ma?", m:"Hola, va a l'aeroport?"},
+      {who:"Tu", h:"对, T2航站楼", p:"Duì, T2 hángzhànlóu", m:"Sí, terminal T2"},
+      {who:"Conductor", h:"大概一个小时", p:"Dàgài yí ge xiǎoshí", m:"Aprox. una hora"},
+      {who:"Tu", h:"请慢点开", p:"Qǐng màn diǎn kāi", m:"Vagi més a poc a poc, si us plau"}
+    ]
+  },
+  {
+    title: "Esperant en cua",
+    emoji: "⏳",
+    bg: "linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)",
+    lines: [
+      {who:"Tu", h:"请问最后一个是谁?", p:"Qǐng wèn zuìhòu yí ge shì shéi?", m:"Disculpi, qui és l'últim?"},
+      {who:"Persona", h:"我, 你排我后面", p:"Wǒ, nǐ pái wǒ hòumiàn", m:"Jo, posi's al meu darrere"},
+      {who:"Tu", h:"还要等多久?", p:"Hái yào děng duō jiǔ?", m:"Quant cal esperar?"},
+      {who:"Persona", h:"大概十分钟", p:"Dàgài shí fēnzhōng", m:"Uns 10 minuts"}
+    ]
+  },
+  {
+    title: "Aniversari!",
+    emoji: "🎂",
+    bg: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+    lines: [
+      {who:"Amics", h:"生日快乐!", p:"Shēngrì kuàilè!", m:"Per molts anys!"},
+      {who:"Tu", h:"谢谢大家!", p:"Xièxie dàjiā!", m:"Gràcies a tothom!"},
+      {who:"Amic", h:"许个愿吧!", p:"Xǔ ge yuàn ba!", m:"Demana un desig!"},
+      {who:"Tu", h:"我希望明年来中国!", p:"Wǒ xīwàng míngnián lái Zhōngguó!", m:"Espero venir a la Xina l'any que ve!"}
+    ]
   }
 ];
 
 let reelIdx = 0, lineIdx = 0;
 let reelTimer = null;
 let reelsActive = false;
-const REEL_LINE_MS = 2800;
+let reelsPaused = false;
+const REEL_LINE_MS = 3200;
 function renderReel() {
   const r = REELS[reelIdx];
   document.getElementById('reel-bg').style.background = r.bg;
@@ -1624,24 +1888,62 @@ function reelBack() {
 }
 function scheduleReelTick() {
   clearTimeout(reelTimer);
+  if (reelsPaused || !reelsActive) return;
   reelTimer = setTimeout(reelAdvance, REEL_LINE_MS);
 }
 function startReels() {
-  reelIdx = 0; lineIdx = 0;
-  reelsActive = true;
-  renderReel();
-  scheduleReelTick();
+  // Only reset to first reel the very first time; otherwise resume current state
+  if (!reelsActive) {
+    if (reelIdx === 0 && lineIdx === 0) {
+      // First time — render the first scene
+    }
+    reelsActive = true;
+    reelsPaused = false;
+    renderReel();
+    scheduleReelTick();
+    updatePauseButton();
+  }
 }
-function stopReels() {
+function pauseReelsTimer() {
+  // Stops auto-advance and audio but PRESERVES reelIdx/lineIdx
   clearTimeout(reelTimer);
-  reelsActive = false;
   speechSynthesis.cancel();
+}
+function leaveReelsView() {
+  // Called when navigating away from reels — keep state, just stop advancing/speaking
+  pauseReelsTimer();
+}
+function enterReelsView() {
+  // Called when navigating to reels — resume only if not user-paused
+  if (reelsActive && !reelsPaused) scheduleReelTick();
+}
+function togglePauseReels() {
+  if (!reelsActive) { startReels(); return; }
+  reelsPaused = !reelsPaused;
+  if (reelsPaused) {
+    clearTimeout(reelTimer);
+    speechSynthesis.cancel();
+  } else {
+    scheduleReelTick();
+  }
+  updatePauseButton();
+}
+function updatePauseButton() {
+  const btn = document.getElementById('reel-pause');
+  if (!btn) return;
+  if (!reelsActive) { btn.textContent = '▶'; btn.classList.remove('paused'); return; }
+  if (reelsPaused) { btn.textContent = '▶'; btn.classList.add('paused'); }
+  else { btn.textContent = '⏸'; btn.classList.remove('paused'); }
 }
 document.getElementById('reel-next').addEventListener('click', () => {
   if (!reelsActive) startReels(); else reelAdvance();
 });
 document.getElementById('reel-prev').addEventListener('click', () => {
   if (!reelsActive) startReels(); else reelBack();
+});
+document.getElementById('reel-pause').addEventListener('click', (e) => {
+  e.stopPropagation();
+  togglePauseReels();
 });
 
 // ===== STATS =====

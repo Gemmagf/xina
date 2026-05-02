@@ -1,4 +1,4 @@
-const CACHE = "jinmanxue-v2";
+const CACHE = "jinmanxue-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,25 +19,43 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+function isHTML(req) {
+  if (req.mode === "navigate") return true;
+  const accept = req.headers.get("accept") || "";
+  return accept.includes("text/html");
+}
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
-  e.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) {
-        // Refresh in background
-        fetch(req).then((res) => {
-          if (res && res.ok) caches.open(CACHE).then((c) => c.put(req, res.clone()));
-        }).catch(() => {});
-        return cached;
-      }
-      return fetch(req).then((res) => {
-        if (res && res.ok && new URL(req.url).origin === location.origin) {
+  const sameOrigin = new URL(req.url).origin === location.origin;
+  if (!sameOrigin) return;
+
+  // Network-first for HTML so updates show immediately when online
+  if (isHTML(req)) {
+    e.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy));
         }
         return res;
-      }).catch(() => caches.match("./index.html"));
+      }).catch(() => caches.match(req).then((c) => c || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for other assets
+  e.respondWith(
+    caches.match(req).then((cached) => {
+      const fetchPromise = fetch(req).then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
