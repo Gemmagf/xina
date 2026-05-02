@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#c8102e">
-<title>Xinès de viatge</title>
+<meta name="theme-color" content="#ff5e7c">
+<meta name="apple-mobile-web-app-title" content="瑾曼学">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>瑾曼学 · Xinès</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
@@ -19,7 +24,7 @@
     overflow-x: hidden;
   }
   header {
-    background: #c8102e;
+    background: #ff5e7c;
     color: #fff;
     padding: 14px 16px;
     display: flex;
@@ -34,7 +39,7 @@
   header .stats { font-size: 12px; opacity: 0.85; }
   nav {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     background: #fff;
     border-bottom: 1px solid #e5e0d6;
     position: sticky;
@@ -44,15 +49,15 @@
   nav button {
     background: none;
     border: none;
-    padding: 10px 2px;
-    font-size: 10px;
+    padding: 8px 1px 9px;
+    font-size: 9.5px;
     cursor: pointer;
     color: #666;
     border-bottom: 3px solid transparent;
     transition: all 0.15s;
     font-weight: 500;
   }
-  nav button.active { color: #c8102e; border-bottom-color: #c8102e; }
+  nav button.active { color: #ff5e7c; border-bottom-color: #ff5e7c; }
   nav button .ico { display: block; font-size: 20px; margin-bottom: 2px; }
   main {
     flex: 1;
@@ -83,7 +88,7 @@
     cursor: pointer;
     color: #555;
   }
-  .cat-tabs button.active { background: #c8102e; color: #fff; border-color: #c8102e; }
+  .cat-tabs button.active { background: #ff5e7c; color: #fff; border-color: #ff5e7c; }
   .phrase-card {
     background: #fff;
     border-radius: 12px;
@@ -96,10 +101,10 @@
   }
   .phrase-text { flex: 1; min-width: 0; }
   .hanzi { font-size: 24px; font-weight: 500; color: #222; line-height: 1.2; }
-  .pinyin { font-size: 14px; color: #c8102e; margin-top: 2px; font-style: italic; }
+  .pinyin { font-size: 14px; color: #ff5e7c; margin-top: 2px; font-style: italic; }
   .meaning { font-size: 13px; color: #666; margin-top: 4px; }
   .play-btn {
-    background: #c8102e;
+    background: #ff5e7c;
     color: #fff;
     border: none;
     width: 44px;
@@ -140,7 +145,7 @@
     user-select: none;
   }
   .flashcard .big-hanzi { font-size: 64px; font-weight: 400; line-height: 1.1; margin-bottom: 12px; }
-  .flashcard .big-pinyin { font-size: 22px; color: #c8102e; font-style: italic; margin-bottom: 12px; }
+  .flashcard .big-pinyin { font-size: 22px; color: #ff5e7c; font-style: italic; margin-bottom: 12px; }
   .flashcard .big-meaning { font-size: 20px; color: #444; }
   .flashcard .hint { font-size: 12px; color: #aaa; margin-top: 16px; }
   .grade-row {
@@ -202,7 +207,7 @@
   }
   .tone-card .tone-num {
     display: inline-block;
-    background: #c8102e;
+    background: #ff5e7c;
     color: #fff;
     width: 28px;
     height: 28px;
@@ -212,9 +217,9 @@
     font-weight: 600;
     margin-bottom: 8px;
   }
-  .tone-card .tone-syl { font-size: 32px; font-weight: 500; color: #c8102e; margin: 6px 0; }
+  .tone-card .tone-syl { font-size: 32px; font-weight: 500; color: #ff5e7c; margin: 6px 0; }
   .tone-card .tone-desc { font-size: 12px; color: #666; }
-  .tone-shape { font-size: 24px; color: #c8102e; }
+  .tone-shape { font-size: 24px; color: #ff5e7c; }
 
   .info-block {
     background: #fff7e6;
@@ -227,12 +232,72 @@
   }
 
   .empty { text-align: center; color: #999; padding: 40px 20px; font-size: 14px; }
-  .reset-btn { margin-top: 20px; background: none; border: 1px solid #c8102e; color: #c8102e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .reset-btn { margin-top: 20px; background: none; border: 1px solid #ff5e7c; color: #ff5e7c; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
   @media (min-width: 600px) {
     main { max-width: 600px; margin: 0 auto; width: 100%; }
     .tone-grid { grid-template-columns: repeat(4, 1fr); }
   }
+
+  /* Reading */
+  .read-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .read-toolbar select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e0d6;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .read-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rd-btn {
+    background: #fff;
+    border: 1px solid #e5e0d6;
+    padding: 7px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+    font-weight: 500;
+  }
+  .rd-btn.active { background: #fff7e6; border-color: #d4a017; color: #8a6708; }
+  .rd-btn.primary { background: #ff5e7c; color: #fff; border-color: #ff5e7c; }
+  .read-meta { font-size: 12px; color: #888; margin-bottom: 10px; padding-left: 4px; }
+  .read-body { padding-bottom: 40px; }
+  .read-section-title { font-weight: 600; color: #ff5e7c; margin: 14px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .read-line {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    position: relative;
+  }
+  .read-line:active { transform: scale(0.98); }
+  .read-line.playing { background: #fff7e6; box-shadow: 0 0 0 2px #d4a017; }
+  .read-line .l-hanzi { font-size: 19px; line-height: 1.4; color: #222; }
+  .read-line .l-pinyin { font-size: 13px; color: #ff5e7c; font-style: italic; margin-top: 4px; line-height: 1.4; }
+  .read-line .l-trans { font-size: 13px; color: #555; margin-top: 4px; line-height: 1.4; }
+  .read-line.hide-pinyin .l-pinyin { display: none; }
+  .read-line.hide-trans .l-trans { display: none; }
+  .read-vocab {
+    background: #f5f1e8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+  .read-vocab b { color: #ff5e7c; font-size: 14px; }
+  .read-vocab .vw { display: inline-block; margin-right: 12px; }
 
   /* Reels */
   #view-reels { padding: 0; margin: -14px; margin-bottom: 0; }
@@ -351,7 +416,7 @@
     font-weight: 600;
   }
   .reel-bubble .b-hanzi { font-size: 22px; font-weight: 500; line-height: 1.25; }
-  .reel-bubble .b-pinyin { font-size: 13px; color: #c8102e; font-style: italic; margin-top: 2px; }
+  .reel-bubble .b-pinyin { font-size: 13px; color: #ff5e7c; font-style: italic; margin-top: 2px; }
   .reel-bubble .b-meaning { font-size: 12px; color: #666; margin-top: 4px; }
   @keyframes bubblePop {
     from { opacity: 0; transform: translateY(12px) scale(0.9); }
@@ -383,13 +448,14 @@
 <body>
 
 <header>
-  <h1>中文 · Xinès de viatge</h1>
+  <h1>瑾曼学 · Xinès</h1>
   <div class="stats" id="stats">0 apreses</div>
 </header>
 
 <nav>
   <button data-view="reels" class="active"><span class="ico">🎬</span>Reels</button>
   <button data-view="phrases"><span class="ico">💬</span>Frases</button>
+  <button data-view="read"><span class="ico">📖</span>Llegir</button>
   <button data-view="signs"><span class="ico">🪧</span>Senyals</button>
   <button data-view="flash"><span class="ico">🃏</span>Targetes</button>
   <button data-view="quiz"><span class="ico">✍️</span>Test</button>
@@ -413,9 +479,23 @@
   </section>
 
   <section id="view-phrases" class="view">
-    <div class="info-block">Toca el botó vermell per escoltar la pronunciació. Repeteix-la en veu alta.</div>
+    <div class="info-block">Toca el botó rosa per escoltar la pronunciació. Repeteix-la en veu alta.</div>
     <div class="cat-tabs" id="cat-tabs"></div>
     <div id="phrase-list"></div>
+  </section>
+
+  <section id="view-read" class="view">
+    <div class="info-block">Lectures curtes A1→B1. Toca una frase per escoltar-la i veure'n la traducció. Botons a dalt per amagar/mostrar pinyin i català.</div>
+    <div class="read-toolbar">
+      <select id="read-select" aria-label="Trieu lectura"></select>
+      <div class="read-controls">
+        <button id="read-toggle-pinyin" class="rd-btn active">Pinyin</button>
+        <button id="read-toggle-trans" class="rd-btn active">Català</button>
+        <button id="read-play-all" class="rd-btn primary">▶ Tot</button>
+      </div>
+    </div>
+    <div class="read-meta" id="read-meta"></div>
+    <div class="read-body" id="read-body"></div>
   </section>
 
   <section id="view-signs" class="view">
@@ -458,40 +538,188 @@
 const PHRASES = {
   "Bàsic": [
     {h:"你好", p:"nǐ hǎo", m:"Hola"},
+    {h:"您好", p:"nín hǎo", m:"Hola (formal)"},
+    {h:"早上好", p:"zǎoshang hǎo", m:"Bon dia"},
+    {h:"晚安", p:"wǎn'ān", m:"Bona nit"},
     {h:"谢谢", p:"xièxie", m:"Gràcies"},
+    {h:"非常感谢", p:"fēicháng gǎnxiè", m:"Moltes gràcies"},
     {h:"不客气", p:"bú kèqi", m:"De res"},
     {h:"再见", p:"zàijiàn", m:"Adéu"},
+    {h:"明天见", p:"míngtiān jiàn", m:"Fins demà"},
     {h:"对不起", p:"duìbuqǐ", m:"Perdó / Ho sento"},
+    {h:"不好意思", p:"bù hǎoyìsi", m:"Disculpi (lleu)"},
     {h:"没关系", p:"méi guānxi", m:"No passa res"},
+    {h:"没问题", p:"méi wèntí", m:"Cap problema"},
     {h:"是", p:"shì", m:"Sí (és)"},
     {h:"不是", p:"bú shì", m:"No (no és)"},
     {h:"对", p:"duì", m:"Correcte / sí"},
     {h:"好", p:"hǎo", m:"Bé / d'acord"},
+    {h:"行", p:"xíng", m:"Va bé / d'acord"},
     {h:"请", p:"qǐng", m:"Si us plau"},
     {h:"我不懂", p:"wǒ bù dǒng", m:"No ho entenc"},
     {h:"你会说英语吗?", p:"nǐ huì shuō yīngyǔ ma?", m:"Parles anglès?"},
+    {h:"请说慢一点", p:"qǐng shuō màn yìdiǎn", m:"Parla més a poc a poc"},
+    {h:"再说一遍", p:"zài shuō yí biàn", m:"Repeteix-ho"},
+    {h:"你叫什么名字?", p:"nǐ jiào shénme míngzi?", m:"Com et dius?"},
     {h:"我叫…", p:"wǒ jiào…", m:"Em dic…"},
-    {h:"我是西班牙人", p:"wǒ shì xībānyá rén", m:"Sóc espanyol/a"}
+    {h:"我是西班牙人", p:"wǒ shì xībānyá rén", m:"Sóc espanyol/a"},
+    {h:"很高兴认识你", p:"hěn gāoxìng rènshi nǐ", m:"Encantat/da de conèixer-te"}
+  ],
+  "Conversa": [
+    {h:"你怎么样?", p:"nǐ zěnmeyàng?", m:"Com estàs?"},
+    {h:"我很好, 你呢?", p:"wǒ hěn hǎo, nǐ ne?", m:"Bé, i tu?"},
+    {h:"还可以", p:"hái kěyǐ", m:"Tirant"},
+    {h:"最近怎么样?", p:"zuìjìn zěnmeyàng?", m:"Com va últimament?"},
+    {h:"很久不见!", p:"hǎo jiǔ bú jiàn!", m:"Quant temps sense veure'ns!"},
+    {h:"真的吗?", p:"zhēn de ma?", m:"De debò?"},
+    {h:"当然!", p:"dāngrán!", m:"És clar!"},
+    {h:"也许", p:"yěxǔ", m:"Potser"},
+    {h:"我也是", p:"wǒ yě shì", m:"Jo també"},
+    {h:"我也不知道", p:"wǒ yě bù zhīdao", m:"Jo tampoc ho sé"},
+    {h:"听起来不错", p:"tīng qǐlai búcuò", m:"Sona bé"},
+    {h:"没问题", p:"méi wèntí", m:"Cap problema"},
+    {h:"我觉得…", p:"wǒ juéde…", m:"Crec que…"},
+    {h:"你觉得呢?", p:"nǐ juéde ne?", m:"Què en penses?"},
+    {h:"为什么?", p:"wèi shénme?", m:"Per què?"},
+    {h:"因为…", p:"yīnwèi…", m:"Perquè…"},
+    {h:"那么", p:"nàme", m:"Llavors / aleshores"},
+    {h:"反正", p:"fǎnzhèng", m:"De totes maneres"},
+    {h:"等一下", p:"děng yíxià", m:"Espera un moment"},
+    {h:"加油!", p:"jiāyóu!", m:"Ànims! / Tu pots!"}
   ],
   "Menjar": [
     {h:"我饿了", p:"wǒ è le", m:"Tinc gana"},
     {h:"我渴了", p:"wǒ kě le", m:"Tinc set"},
     {h:"我要这个", p:"wǒ yào zhège", m:"Vull això (assenyalant)"},
-    {h:"菜单", p:"càidān", m:"La carta / menú"},
+    {h:"菜单, 请", p:"càidān, qǐng", m:"La carta, si us plau"},
+    {h:"你们有什么推荐?", p:"nǐmen yǒu shénme tuījiàn?", m:"Què recomaneu?"},
+    {h:"这是什么?", p:"zhè shì shénme?", m:"Què és això?"},
     {h:"水", p:"shuǐ", m:"Aigua"},
+    {h:"热水", p:"rè shuǐ", m:"Aigua calenta"},
+    {h:"冰水", p:"bīng shuǐ", m:"Aigua freda"},
     {h:"茶", p:"chá", m:"Te"},
+    {h:"绿茶", p:"lǜ chá", m:"Te verd"},
     {h:"咖啡", p:"kāfēi", m:"Cafè"},
     {h:"啤酒", p:"píjiǔ", m:"Cervesa"},
+    {h:"红酒", p:"hóngjiǔ", m:"Vi negre"},
     {h:"米饭", p:"mǐfàn", m:"Arròs"},
+    {h:"炒饭", p:"chǎofàn", m:"Arròs fregit"},
     {h:"面条", p:"miàntiáo", m:"Fideus"},
+    {h:"包子", p:"bāozi", m:"Pa al vapor farcit"},
+    {h:"饺子", p:"jiǎozi", m:"Empanadetes (jiaozi)"},
     {h:"鸡肉", p:"jīròu", m:"Pollastre"},
     {h:"牛肉", p:"niúròu", m:"Vedella"},
     {h:"猪肉", p:"zhūròu", m:"Porc"},
     {h:"鱼", p:"yú", m:"Peix"},
+    {h:"虾", p:"xiā", m:"Gambes"},
     {h:"蔬菜", p:"shūcài", m:"Verdura"},
+    {h:"鸡蛋", p:"jīdàn", m:"Ou"},
+    {h:"豆腐", p:"dòufu", m:"Tofu"},
+    {h:"水果", p:"shuǐguǒ", m:"Fruita"},
     {h:"不要辣", p:"bú yào là", m:"Sense picant"},
+    {h:"我吃素", p:"wǒ chī sù", m:"Sóc vegetarià/ana"},
+    {h:"我对…过敏", p:"wǒ duì… guòmǐn", m:"Sóc al·lèrgic/a a…"},
     {h:"很好吃", p:"hěn hǎochī", m:"Molt bo (de menjar)"},
+    {h:"我吃饱了", p:"wǒ chī bǎo le", m:"Estic tip/a"},
+    {h:"打包", p:"dǎbāo", m:"Per emportar"},
     {h:"买单", p:"mǎidān", m:"El compte, si us plau"}
+  ],
+  "Família": [
+    {h:"家人", p:"jiārén", m:"Família"},
+    {h:"爸爸", p:"bàba", m:"Pare"},
+    {h:"妈妈", p:"māma", m:"Mare"},
+    {h:"哥哥", p:"gēge", m:"Germà gran"},
+    {h:"弟弟", p:"dìdi", m:"Germà petit"},
+    {h:"姐姐", p:"jiějie", m:"Germana gran"},
+    {h:"妹妹", p:"mèimei", m:"Germana petita"},
+    {h:"儿子", p:"érzi", m:"Fill"},
+    {h:"女儿", p:"nǚ'ér", m:"Filla"},
+    {h:"老公", p:"lǎogōng", m:"Marit"},
+    {h:"老婆", p:"lǎopó", m:"Dona (esposa)"},
+    {h:"朋友", p:"péngyou", m:"Amic/iga"},
+    {h:"男朋友", p:"nán péngyou", m:"Xicot"},
+    {h:"女朋友", p:"nǚ péngyou", m:"Xicota"},
+    {h:"你结婚了吗?", p:"nǐ jiéhūn le ma?", m:"Estàs casat/da?"},
+    {h:"你有孩子吗?", p:"nǐ yǒu háizi ma?", m:"Tens fills?"},
+    {h:"我有一个孩子", p:"wǒ yǒu yí ge háizi", m:"Tinc un fill/a"},
+    {h:"我没有兄弟姐妹", p:"wǒ méiyǒu xiōngdì jiěmèi", m:"No tinc germans"}
+  ],
+  "Hora & dies": [
+    {h:"现在几点?", p:"xiànzài jǐ diǎn?", m:"Quina hora és?"},
+    {h:"八点", p:"bā diǎn", m:"Les vuit"},
+    {h:"八点半", p:"bā diǎn bàn", m:"Dos quarts de nou"},
+    {h:"八点一刻", p:"bā diǎn yí kè", m:"Un quart de nou"},
+    {h:"早上", p:"zǎoshang", m:"Matí"},
+    {h:"中午", p:"zhōngwǔ", m:"Migdia"},
+    {h:"下午", p:"xiàwǔ", m:"Tarda"},
+    {h:"晚上", p:"wǎnshang", m:"Vespre / nit"},
+    {h:"今天", p:"jīntiān", m:"Avui"},
+    {h:"明天", p:"míngtiān", m:"Demà"},
+    {h:"昨天", p:"zuótiān", m:"Ahir"},
+    {h:"今天星期几?", p:"jīntiān xīngqī jǐ?", m:"Quin dia és avui?"},
+    {h:"星期一", p:"xīngqī yī", m:"Dilluns"},
+    {h:"星期二", p:"xīngqī èr", m:"Dimarts"},
+    {h:"星期三", p:"xīngqī sān", m:"Dimecres"},
+    {h:"星期四", p:"xīngqī sì", m:"Dijous"},
+    {h:"星期五", p:"xīngqī wǔ", m:"Divendres"},
+    {h:"星期六", p:"xīngqī liù", m:"Dissabte"},
+    {h:"星期日", p:"xīngqī rì", m:"Diumenge"},
+    {h:"周末", p:"zhōumò", m:"Cap de setmana"},
+    {h:"上个月", p:"shàng ge yuè", m:"El mes passat"},
+    {h:"下个月", p:"xià ge yuè", m:"El mes que ve"},
+    {h:"几月几号?", p:"jǐ yuè jǐ hào?", m:"Quina data?"},
+    {h:"五月一号", p:"wǔ yuè yī hào", m:"L'1 de maig"}
+  ],
+  "Sentiments": [
+    {h:"我很开心", p:"wǒ hěn kāixīn", m:"Estic content/a"},
+    {h:"我很高兴", p:"wǒ hěn gāoxìng", m:"Estic alegre"},
+    {h:"我累了", p:"wǒ lèi le", m:"Estic cansat/da"},
+    {h:"我困了", p:"wǒ kùn le", m:"Tinc son"},
+    {h:"我很忙", p:"wǒ hěn máng", m:"Estic ocupat/da"},
+    {h:"我很无聊", p:"wǒ hěn wúliáo", m:"M'avorreixo"},
+    {h:"我紧张", p:"wǒ jǐnzhāng", m:"Estic nerviós/a"},
+    {h:"我害怕", p:"wǒ hàipà", m:"Tinc por"},
+    {h:"我生气了", p:"wǒ shēngqì le", m:"Estic enfadat/da"},
+    {h:"我难过", p:"wǒ nánguò", m:"Estic trist/a"},
+    {h:"我很想你", p:"wǒ hěn xiǎng nǐ", m:"Et trobo a faltar"},
+    {h:"我爱你", p:"wǒ ài nǐ", m:"T'estimo"},
+    {h:"太棒了!", p:"tài bàng le!", m:"Genial!"},
+    {h:"太好了!", p:"tài hǎo le!", m:"Que bé!"},
+    {h:"真可惜", p:"zhēn kěxī", m:"Quina llàstima"},
+    {h:"我喜欢…", p:"wǒ xǐhuan…", m:"M'agrada…"},
+    {h:"我不喜欢…", p:"wǒ bù xǐhuan…", m:"No m'agrada…"},
+    {h:"我最喜欢…", p:"wǒ zuì xǐhuan…", m:"El que més m'agrada és…"}
+  ],
+  "Hotel & viatge": [
+    {h:"我有预订", p:"wǒ yǒu yùdìng", m:"Tinc reserva"},
+    {h:"我想订一个房间", p:"wǒ xiǎng dìng yí ge fángjiān", m:"Vull reservar habitació"},
+    {h:"一个晚上多少钱?", p:"yí ge wǎnshang duōshao qián?", m:"Quant val per nit?"},
+    {h:"包括早餐吗?", p:"bāokuò zǎocān ma?", m:"Inclou esmorzar?"},
+    {h:"有Wi-Fi吗?", p:"yǒu wifi ma?", m:"Hi ha wifi?"},
+    {h:"密码是什么?", p:"mìmǎ shì shénme?", m:"Quina és la contrasenya?"},
+    {h:"我的房间没有热水", p:"wǒ de fángjiān méiyǒu rè shuǐ", m:"A la meva habitació no hi ha aigua calenta"},
+    {h:"空调坏了", p:"kōngtiáo huài le", m:"L'aire condicionat no funciona"},
+    {h:"我要退房", p:"wǒ yào tuìfáng", m:"Vull fer el check-out"},
+    {h:"行李", p:"xíngli", m:"Equipatge"},
+    {h:"护照", p:"hùzhào", m:"Passaport"},
+    {h:"签证", p:"qiānzhèng", m:"Visat"},
+    {h:"几点起飞?", p:"jǐ diǎn qǐfēi?", m:"A quina hora enlaira?"},
+    {h:"航班晚点了", p:"hángbān wǎndiǎn le", m:"El vol porta retard"},
+    {h:"我想换钱", p:"wǒ xiǎng huànqián", m:"Vull canviar diners"}
+  ],
+  "Salut": [
+    {h:"我不舒服", p:"wǒ bù shūfu", m:"No em trobo bé"},
+    {h:"我感冒了", p:"wǒ gǎnmào le", m:"M'he refredat"},
+    {h:"我发烧了", p:"wǒ fāshāo le", m:"Tinc febre"},
+    {h:"我头疼", p:"wǒ tóu téng", m:"Em fa mal el cap"},
+    {h:"我肚子疼", p:"wǒ dùzi téng", m:"Em fa mal la panxa"},
+    {h:"我喉咙疼", p:"wǒ hóulóng téng", m:"Em fa mal la gola"},
+    {h:"我牙疼", p:"wǒ yá téng", m:"Em fa mal una dent"},
+    {h:"我咳嗽", p:"wǒ késou", m:"Tinc tos"},
+    {h:"我想吐", p:"wǒ xiǎng tù", m:"Tinc ganes de vomitar"},
+    {h:"药店在哪里?", p:"yàodiàn zài nǎli?", m:"On hi ha una farmàcia?"},
+    {h:"我需要药", p:"wǒ xūyào yào", m:"Necessito medicaments"},
+    {h:"叫医生", p:"jiào yīshēng", m:"Truca al metge"}
   ],
   "Compres": [
     {h:"多少钱?", p:"duōshao qián?", m:"Quant val?"},
@@ -627,6 +855,7 @@ document.querySelectorAll('nav button').forEach(btn => {
     if (btn.dataset.view === 'reels') startReels();
     if (btn.dataset.view === 'flash') nextFlashcard();
     if (btn.dataset.view === 'quiz') nextQuiz();
+    if (btn.dataset.view === 'read') renderReading();
   });
 });
 
@@ -829,6 +1058,264 @@ function renderTones() {
   });
 }
 
+// ===== READING =====
+const READINGS = [
+  {
+    title: "Em presento",
+    level: "A1",
+    intro: "Una presentació personal bàsica. Útil per quan coneixes algú nou.",
+    lines: [
+      {h:"你好! 我叫玛丽亚。", p:"Nǐ hǎo! Wǒ jiào Mǎlìyà.", m:"Hola! Em dic Maria."},
+      {h:"我是西班牙人, 来自巴塞罗那。", p:"Wǒ shì xībānyá rén, láizì Bāsàiluónà.", m:"Sóc espanyola, de Barcelona."},
+      {h:"我今年三十岁。", p:"Wǒ jīnnián sānshí suì.", m:"Tinc trenta anys."},
+      {h:"我会说西班牙语和一点中文。", p:"Wǒ huì shuō xībānyá yǔ hé yìdiǎn zhōngwén.", m:"Sé parlar espanyol i una mica de xinès."},
+      {h:"我喜欢旅行, 拍照和喝咖啡。", p:"Wǒ xǐhuan lǚxíng, pāizhào hé hē kāfēi.", m:"M'agrada viatjar, fer fotos i prendre cafè."},
+      {h:"认识你很高兴!", p:"Rènshi nǐ hěn gāoxìng!", m:"Encantada de conèixer-te!"}
+    ],
+    vocab: [
+      {h:"叫", p:"jiào", m:"dir-se"},
+      {h:"来自", p:"láizì", m:"venir de"},
+      {h:"会", p:"huì", m:"saber (fer)"},
+      {h:"喜欢", p:"xǐhuan", m:"agradar"},
+      {h:"认识", p:"rènshi", m:"conèixer"}
+    ]
+  },
+  {
+    title: "La meva família",
+    level: "A1-A2",
+    intro: "Parlar de la família, professions i edats.",
+    lines: [
+      {h:"我家有四个人。", p:"Wǒ jiā yǒu sì ge rén.", m:"A casa som quatre."},
+      {h:"爸爸, 妈妈, 我和弟弟。", p:"Bàba, māma, wǒ hé dìdi.", m:"El pare, la mare, jo i el germà petit."},
+      {h:"爸爸是医生, 在医院工作。", p:"Bàba shì yīshēng, zài yīyuàn gōngzuò.", m:"El pare és metge, treballa a l'hospital."},
+      {h:"妈妈是老师, 她教数学。", p:"Māma shì lǎoshī, tā jiāo shùxué.", m:"La mare és mestra, ensenya matemàtiques."},
+      {h:"弟弟二十岁, 在大学学习。", p:"Dìdi èrshí suì, zài dàxué xuéxí.", m:"El meu germà té vint anys, estudia a la universitat."},
+      {h:"我们都很喜欢看电影。", p:"Wǒmen dōu hěn xǐhuan kàn diànyǐng.", m:"A tots ens agrada molt veure pel·lícules."}
+    ],
+    vocab: [
+      {h:"家", p:"jiā", m:"casa, família"},
+      {h:"工作", p:"gōngzuò", m:"treballar"},
+      {h:"教", p:"jiāo", m:"ensenyar"},
+      {h:"都", p:"dōu", m:"tots, tot"}
+    ]
+  },
+  {
+    title: "Un dia normal",
+    level: "A2",
+    intro: "Una rutina diària. Aprèn a parlar d'hores i activitats.",
+    lines: [
+      {h:"我每天早上七点起床。", p:"Wǒ měitiān zǎoshang qī diǎn qǐchuáng.", m:"Cada dia em llevo a les set del matí."},
+      {h:"洗澡以后, 我吃早饭。", p:"Xǐzǎo yǐhòu, wǒ chī zǎofàn.", m:"Després de dutxar-me, esmorzo."},
+      {h:"早饭是咖啡和面包。", p:"Zǎofàn shì kāfēi hé miànbāo.", m:"L'esmorzar és cafè i pa."},
+      {h:"九点我坐地铁去上班。", p:"Jiǔ diǎn wǒ zuò dìtiě qù shàngbān.", m:"A les nou agafo el metro per anar a treballar."},
+      {h:"中午和同事一起吃午饭。", p:"Zhōngwǔ hé tóngshì yìqǐ chī wǔfàn.", m:"Al migdia dino amb els companys."},
+      {h:"晚上回家做饭, 看电视。", p:"Wǎnshang huí jiā zuò fàn, kàn diànshì.", m:"Al vespre torno a casa, cuino i miro la tele."},
+      {h:"十一点睡觉。", p:"Shíyī diǎn shuìjiào.", m:"A les onze me'n vaig a dormir."}
+    ],
+    vocab: [
+      {h:"每天", p:"měitiān", m:"cada dia"},
+      {h:"以后", p:"yǐhòu", m:"després de"},
+      {h:"坐", p:"zuò", m:"agafar (transport)"},
+      {h:"上班", p:"shàngbān", m:"anar a la feina"},
+      {h:"一起", p:"yìqǐ", m:"junts"}
+    ]
+  },
+  {
+    title: "Al mercat",
+    level: "A2",
+    intro: "Comprar fruita i regatejar al mercat.",
+    lines: [
+      {h:"今天周六, 我去菜市场。", p:"Jīntiān zhōuliù, wǒ qù càishìchǎng.", m:"Avui és dissabte, vaig al mercat."},
+      {h:"苹果两块钱一斤。", p:"Píngguǒ liǎng kuài qián yì jīn.", m:"Les pomes valen 2 iuans per mig quilo."},
+      {h:"我买了三斤。", p:"Wǒ mǎi le sān jīn.", m:"N'he comprat un quilo i mig."},
+      {h:"卖菜的阿姨很热情。", p:"Mài cài de āyí hěn rèqíng.", m:"La senyora que ven la verdura és molt simpàtica."},
+      {h:"她送了我一些葱。", p:"Tā sòng le wǒ yìxiē cōng.", m:"M'ha regalat una mica de ceba tendra."},
+      {h:"回家的路上买了奶茶。", p:"Huí jiā de lùshang mǎi le nǎichá.", m:"De camí cap a casa he comprat un te amb llet."},
+      {h:"市场很热闹, 也很便宜。", p:"Shìchǎng hěn rènao, yě hěn piányi.", m:"El mercat és molt animat i barat."}
+    ],
+    vocab: [
+      {h:"斤", p:"jīn", m:"mig quilo (mesura xinesa)"},
+      {h:"块", p:"kuài", m:"iuan (col·loquial)"},
+      {h:"送", p:"sòng", m:"regalar / portar"},
+      {h:"热闹", p:"rènao", m:"animat, ple de gent"}
+    ]
+  },
+  {
+    title: "El temps",
+    level: "A2",
+    intro: "Parlar del temps que fa.",
+    lines: [
+      {h:"今天天气很好。", p:"Jīntiān tiānqì hěn hǎo.", m:"Avui fa bon temps."},
+      {h:"阳光明媚, 二十五度。", p:"Yángguāng míngmèi, èrshíwǔ dù.", m:"Fa sol, 25 graus."},
+      {h:"不冷也不热。", p:"Bù lěng yě bù rè.", m:"Ni fred ni calor."},
+      {h:"昨天下雨了, 我没出门。", p:"Zuótiān xià yǔ le, wǒ méi chūmén.", m:"Ahir va ploure, no vaig sortir."},
+      {h:"明天可能有雷阵雨。", p:"Míngtiān kěnéng yǒu léizhènyǔ.", m:"Demà potser hi haurà tronades."},
+      {h:"我最喜欢春天和秋天。", p:"Wǒ zuì xǐhuan chūntiān hé qiūtiān.", m:"El que més m'agrada és la primavera i la tardor."}
+    ],
+    vocab: [
+      {h:"天气", p:"tiānqì", m:"temps (clima)"},
+      {h:"度", p:"dù", m:"grau"},
+      {h:"下雨", p:"xià yǔ", m:"ploure"},
+      {h:"可能", p:"kěnéng", m:"potser, possible"}
+    ]
+  },
+  {
+    title: "Demanant indicacions",
+    level: "A2-B1",
+    intro: "Diàleg per preguntar com arribar a un lloc.",
+    lines: [
+      {h:"不好意思, 请问地铁站怎么走?", p:"Bù hǎoyìsi, qǐng wèn dìtiězhàn zěnme zǒu?", m:"Disculpi, com es va a l'estació de metro?"},
+      {h:"你直走到红绿灯。", p:"Nǐ zhí zǒu dào hónglǜdēng.", m:"Vagi recte fins al semàfor."},
+      {h:"然后右转。", p:"Ránhòu yòu zhuǎn.", m:"Després giri a la dreta."},
+      {h:"大概走五分钟就到了。", p:"Dàgài zǒu wǔ fēnzhōng jiù dào le.", m:"En uns cinc minuts hi arribarà."},
+      {h:"谢谢你, 你真好!", p:"Xièxie nǐ, nǐ zhēn hǎo!", m:"Gràcies, és molt amable!"},
+      {h:"不客气, 祝你旅行愉快!", p:"Bú kèqi, zhù nǐ lǚxíng yúkuài!", m:"De res, bon viatge!"}
+    ],
+    vocab: [
+      {h:"怎么走", p:"zěnme zǒu", m:"com s'hi va"},
+      {h:"红绿灯", p:"hónglǜdēng", m:"semàfor"},
+      {h:"右转", p:"yòu zhuǎn", m:"girar a la dreta"},
+      {h:"大概", p:"dàgài", m:"aproximadament"},
+      {h:"祝", p:"zhù", m:"desitjar (votar bons desitjos)"}
+    ]
+  },
+  {
+    title: "Plans de cap de setmana",
+    level: "B1",
+    intro: "Convidant un amic a una activitat.",
+    lines: [
+      {h:"这个周末你有什么计划?", p:"Zhège zhōumò nǐ yǒu shénme jìhuà?", m:"Tens plans aquest cap de setmana?"},
+      {h:"星期六我打算去爬山。", p:"Xīngqīliù wǒ dǎsuàn qù páshān.", m:"Dissabte tinc pensat anar a caminar per la muntanya."},
+      {h:"你想一起去吗?", p:"Nǐ xiǎng yìqǐ qù ma?", m:"Vols venir?"},
+      {h:"好啊! 几点出发?", p:"Hǎo a! Jǐ diǎn chūfā?", m:"Sí! A quina hora sortim?"},
+      {h:"早上八点见, 在公园门口。", p:"Zǎoshang bā diǎn jiàn, zài gōngyuán ménkǒu.", m:"Ens veiem a les vuit, a la porta del parc."},
+      {h:"别忘了带水和防晒霜!", p:"Bié wàng le dài shuǐ hé fángshàishuāng!", m:"No oblidis portar aigua i crema solar!"}
+    ],
+    vocab: [
+      {h:"计划", p:"jìhuà", m:"pla, plans"},
+      {h:"打算", p:"dǎsuàn", m:"tenir pensat"},
+      {h:"出发", p:"chūfā", m:"sortir, partir"},
+      {h:"别", p:"bié", m:"no (imperatiu)"}
+    ]
+  },
+  {
+    title: "Aprenent xinès",
+    level: "B1",
+    intro: "Reflexió sobre el procés d'aprendre la llengua.",
+    lines: [
+      {h:"我学中文已经六个月了。", p:"Wǒ xué zhōngwén yǐjīng liù ge yuè le.", m:"Ja fa sis mesos que estudio xinès."},
+      {h:"开始的时候, 汉字很难。", p:"Kāishǐ de shíhou, hànzì hěn nán.", m:"Al principi, els caràcters eren molt difícils."},
+      {h:"我经常忘记。", p:"Wǒ jīngcháng wàngjì.", m:"Sovint els oblidava."},
+      {h:"现在我能读简单的句子。", p:"Xiànzài wǒ néng dú jiǎndān de jùzi.", m:"Ara puc llegir frases senzilles."},
+      {h:"说话还有点慢, 但每天都练习。", p:"Shuōhuà hái yǒudiǎn màn, dàn měitiān dōu liànxí.", m:"Encara parlo lent, però practico cada dia."},
+      {h:"我希望明年可以去中国旅游。", p:"Wǒ xīwàng míngnián kěyǐ qù Zhōngguó lǚyóu.", m:"Espero que l'any que ve podré anar a la Xina."}
+    ],
+    vocab: [
+      {h:"已经", p:"yǐjīng", m:"ja"},
+      {h:"经常", p:"jīngcháng", m:"sovint"},
+      {h:"能", p:"néng", m:"poder (capacitat)"},
+      {h:"练习", p:"liànxí", m:"practicar"},
+      {h:"希望", p:"xīwàng", m:"esperar, desitjar"}
+    ]
+  }
+];
+
+let currentReading = 0;
+let readPlayingIdx = -1;
+let readPlayQueue = null;
+function renderReadSelector() {
+  const sel = document.getElementById('read-select');
+  sel.innerHTML = '';
+  READINGS.forEach((r, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${r.title} · ${r.level}`;
+    sel.appendChild(opt);
+  });
+  sel.value = currentReading;
+  sel.onchange = () => { currentReading = parseInt(sel.value); renderReading(); };
+}
+function renderReading() {
+  const r = READINGS[currentReading];
+  document.getElementById('read-meta').innerHTML = `<b>Nivell ${r.level}.</b> ${r.intro}`;
+  const body = document.getElementById('read-body');
+  const showP = document.getElementById('read-toggle-pinyin').classList.contains('active');
+  const showT = document.getElementById('read-toggle-trans').classList.contains('active');
+  body.innerHTML = '';
+  r.lines.forEach((ln, i) => {
+    const div = document.createElement('div');
+    div.className = 'read-line';
+    if (!showP) div.classList.add('hide-pinyin');
+    if (!showT) div.classList.add('hide-trans');
+    div.dataset.i = i;
+    div.innerHTML = `
+      <div class="l-hanzi">${ln.h}</div>
+      <div class="l-pinyin">${ln.p}</div>
+      <div class="l-trans">${ln.m}</div>`;
+    div.onclick = () => playReadLine(i);
+    body.appendChild(div);
+  });
+  if (r.vocab && r.vocab.length) {
+    const v = document.createElement('div');
+    v.className = 'read-vocab';
+    v.innerHTML = '<b>Vocabulari</b><br>' + r.vocab.map(w => `<span class="vw"><b>${w.h}</b> ${w.p} — ${w.m}</span>`).join(' ');
+    body.appendChild(v);
+  }
+}
+function playReadLine(i) {
+  const r = READINGS[currentReading];
+  document.querySelectorAll('.read-line').forEach(el => el.classList.remove('playing'));
+  const el = document.querySelector(`.read-line[data-i="${i}"]`);
+  if (el) el.classList.add('playing');
+  speak(r.lines[i].h);
+  // Track as seen
+  const k = r.lines[i].h;
+  const rec = store.cards[k] || {ease:2.0, reps:0, due:0};
+  rec.reps = (rec.reps || 0) + 1;
+  rec.due = Date.now() + 60 * 60000;
+  store.cards[k] = rec;
+  save();
+  updateStats();
+}
+async function playReadAll() {
+  const r = READINGS[currentReading];
+  if (readPlayQueue) { readPlayQueue.cancel = true; readPlayQueue = null; speechSynthesis.cancel(); document.querySelectorAll('.read-line').forEach(el => el.classList.remove('playing')); return; }
+  const q = {cancel: false};
+  readPlayQueue = q;
+  for (let i = 0; i < r.lines.length; i++) {
+    if (q.cancel) break;
+    document.querySelectorAll('.read-line').forEach(el => el.classList.remove('playing'));
+    const el = document.querySelector(`.read-line[data-i="${i}"]`);
+    if (el) { el.classList.add('playing'); el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+    await new Promise((resolve) => {
+      const u = new SpeechSynthesisUtterance(r.lines[i].h);
+      u.lang = 'zh-CN';
+      u.rate = 0.8;
+      const v = pickVoice();
+      if (v) u.voice = v;
+      u.onend = resolve;
+      u.onerror = resolve;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    });
+    if (q.cancel) break;
+    await new Promise(r => setTimeout(r, 400));
+  }
+  readPlayQueue = null;
+  document.querySelectorAll('.read-line').forEach(el => el.classList.remove('playing'));
+}
+function setupReadingControls() {
+  document.getElementById('read-toggle-pinyin').onclick = function() {
+    this.classList.toggle('active');
+    renderReading();
+  };
+  document.getElementById('read-toggle-trans').onclick = function() {
+    this.classList.toggle('active');
+    renderReading();
+  };
+  document.getElementById('read-play-all').onclick = playReadAll;
+}
+
 // ===== REELS =====
 const REELS = [
   {
@@ -965,6 +1452,101 @@ const REELS = [
       {who:"Tu", h:"一张票", p:"Yì zhāng piào", m:"Un bitllet"},
       {who:"Tu", h:"谢谢!", p:"Xièxie!", m:"Gràcies!"}
     ]
+  },
+  {
+    title: "Check-in a l'hotel",
+    emoji: "🛎️",
+    bg: "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)",
+    lines: [
+      {who:"Recepció", h:"您好, 有预订吗?", p:"Nín hǎo, yǒu yùdìng ma?", m:"Hola, té reserva?"},
+      {who:"Tu", h:"有, 我叫玛丽亚", p:"Yǒu, wǒ jiào Mǎlìyà", m:"Sí, em dic Maria"},
+      {who:"Recepció", h:"护照, 请", p:"Hùzhào, qǐng", m:"El passaport, si us plau"},
+      {who:"Tu", h:"给您", p:"Gěi nín", m:"Aquí el té"},
+      {who:"Recepció", h:"房间号八零五", p:"Fángjiān hào bā líng wǔ", m:"Habitació 805"}
+    ]
+  },
+  {
+    title: "Comprant roba",
+    emoji: "👗",
+    bg: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)",
+    lines: [
+      {who:"Tu", h:"我可以试一下吗?", p:"Wǒ kěyǐ shì yíxià ma?", m:"Em puc emprovar?"},
+      {who:"Botiguera", h:"当然!", p:"Dāngrán!", m:"És clar!"},
+      {who:"Tu", h:"有大一号的吗?", p:"Yǒu dà yí hào de ma?", m:"En té una talla més gran?"},
+      {who:"Botiguera", h:"有, 等一下", p:"Yǒu, děng yíxià", m:"Sí, esperi"},
+      {who:"Tu", h:"我喜欢这个颜色", p:"Wǒ xǐhuan zhège yánsè", m:"M'agrada aquest color"}
+    ]
+  },
+  {
+    title: "Un cafè per anar",
+    emoji: "☕",
+    bg: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)",
+    lines: [
+      {who:"Tu", h:"一杯拿铁, 谢谢", p:"Yì bēi nátiě, xièxie", m:"Un cafè amb llet, gràcies"},
+      {who:"Cambrer", h:"中杯还是大杯?", p:"Zhōng bēi háishi dà bēi?", m:"Mitjà o gran?"},
+      {who:"Tu", h:"中杯, 不要糖", p:"Zhōng bēi, bú yào táng", m:"Mitjà, sense sucre"},
+      {who:"Cambrer", h:"在这里喝吗?", p:"Zài zhèli hē ma?", m:"S'ho pren aquí?"},
+      {who:"Tu", h:"带走, 谢谢", p:"Dài zǒu, xièxie", m:"Per emportar, gràcies"}
+    ]
+  },
+  {
+    title: "Em trobo malament",
+    emoji: "🤒",
+    bg: "linear-gradient(135deg, #b6fbff 0%, #83a4d4 100%)",
+    lines: [
+      {who:"Tu", h:"我不舒服", p:"Wǒ bù shūfu", m:"No em trobo bé"},
+      {who:"Amic", h:"怎么了?", p:"Zěnme le?", m:"Què passa?"},
+      {who:"Tu", h:"我头疼, 还发烧", p:"Wǒ tóu téng, hái fāshāo", m:"Em fa mal el cap i tinc febre"},
+      {who:"Amic", h:"去医院吧", p:"Qù yīyuàn ba", m:"Anem a l'hospital"},
+      {who:"Tu", h:"好, 谢谢你", p:"Hǎo, xièxie nǐ", m:"D'acord, gràcies"}
+    ]
+  },
+  {
+    title: "Conversa al parc",
+    emoji: "🌳",
+    bg: "linear-gradient(135deg, #a1ffce 0%, #faffd1 100%)",
+    lines: [
+      {who:"Iaia", h:"你是哪国人?", p:"Nǐ shì nǎ guó rén?", m:"De quin país ets?"},
+      {who:"Tu", h:"我是西班牙人", p:"Wǒ shì xībānyá rén", m:"Espanyol/a"},
+      {who:"Iaia", h:"你的中文真好!", p:"Nǐ de zhōngwén zhēn hǎo!", m:"Parles molt bé el xinès!"},
+      {who:"Tu", h:"哪里哪里, 还差得远", p:"Nǎli nǎli, hái chà de yuǎn", m:"Què va, em queda molt"},
+      {who:"Iaia", h:"加油!", p:"Jiāyóu!", m:"Ànims!"}
+    ]
+  },
+  {
+    title: "Trucant un amic",
+    emoji: "📱",
+    bg: "linear-gradient(135deg, #fcb045 0%, #fd1d1d 100%)",
+    lines: [
+      {who:"Tu", h:"喂, 你在哪里?", p:"Wèi, nǐ zài nǎli?", m:"Hola, on ets?"},
+      {who:"Amic", h:"我在咖啡店", p:"Wǒ zài kāfēi diàn", m:"Sóc a la cafeteria"},
+      {who:"Tu", h:"等我十分钟", p:"Děng wǒ shí fēnzhōng", m:"Espera'm 10 minuts"},
+      {who:"Amic", h:"好的, 慢慢来", p:"Hǎo de, mànman lái", m:"D'acord, sense pressa"}
+    ]
+  },
+  {
+    title: "Reservant taula",
+    emoji: "🍽️",
+    bg: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    lines: [
+      {who:"Tu", h:"我想订一张桌子", p:"Wǒ xiǎng dìng yì zhāng zhuōzi", m:"Vull reservar una taula"},
+      {who:"Restaurant", h:"几位?", p:"Jǐ wèi?", m:"Per a quants?"},
+      {who:"Tu", h:"两位, 今晚八点", p:"Liǎng wèi, jīn wǎn bā diǎn", m:"Dues persones, avui a les 8"},
+      {who:"Restaurant", h:"您贵姓?", p:"Nín guì xìng?", m:"Quin cognom té?"},
+      {who:"Tu", h:"我姓加西亚", p:"Wǒ xìng Jiāxīyà", m:"Em dic García"}
+    ]
+  },
+  {
+    title: "Comprant un bitllet de tren",
+    emoji: "🚄",
+    bg: "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)",
+    lines: [
+      {who:"Tu", h:"我要去上海", p:"Wǒ yào qù Shànghǎi", m:"Vull anar a Xangai"},
+      {who:"Taquilla", h:"什么时候?", p:"Shénme shíhou?", m:"Quan?"},
+      {who:"Tu", h:"明天早上", p:"Míngtiān zǎoshang", m:"Demà al matí"},
+      {who:"Taquilla", h:"高铁还是动车?", p:"Gāotiě háishi dòngchē?", m:"AVE o tren ràpid?"},
+      {who:"Tu", h:"高铁, 一张票", p:"Gāotiě, yì zhāng piào", m:"AVE, un bitllet"}
+    ]
   }
 ];
 
@@ -1074,10 +1656,20 @@ renderCats();
 renderPhrases();
 renderSigns();
 renderTones();
+renderReadSelector();
+setupReadingControls();
+renderReading();
 updateStats();
 
 // Warm up TTS engine
 setTimeout(() => { speechSynthesis.getVoices(); }, 200);
+
+// Register service worker for offline use
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW failed:', err));
+  });
+}
 </script>
 </body>
 </html>
