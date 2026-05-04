@@ -38,24 +38,30 @@
   header h1 { font-size: 18px; font-weight: 600; }
   header .stats { font-size: 12px; opacity: 0.85; }
   nav {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    display: flex;
+    overflow-x: auto;
     background: #fff;
     border-bottom: 1px solid #e5e0d6;
     position: sticky;
     top: 50px;
     z-index: 9;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+  nav::-webkit-scrollbar { display: none; }
   nav button {
+    flex: 0 0 auto;
+    min-width: 64px;
     background: none;
     border: none;
-    padding: 8px 1px 9px;
-    font-size: 9.5px;
+    padding: 8px 8px 9px;
+    font-size: 10px;
     cursor: pointer;
     color: #666;
     border-bottom: 3px solid transparent;
     transition: all 0.15s;
     font-weight: 500;
+    white-space: nowrap;
   }
   nav button.active { color: #ff5e7c; border-bottom-color: #ff5e7c; }
   nav button .ico { display: block; font-size: 20px; margin-bottom: 2px; }
@@ -299,6 +305,141 @@
   .read-vocab b { color: #ff5e7c; font-size: 14px; }
   .read-vocab .vw { display: inline-block; margin-right: 12px; }
 
+  /* Travel */
+  .travel-section { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .travel-section h3 { font-size: 16px; color: #ff5e7c; margin-bottom: 8px; }
+  .travel-section ul { padding-left: 18px; line-height: 1.6; font-size: 14px; }
+  .travel-section li { margin-bottom: 6px; color: #333; }
+  .travel-section li b { color: #222; }
+  .travel-section li i { color: #ff5e7c; font-style: italic; }
+  .travel-section p { font-size: 14px; line-height: 1.5; color: #333; margin-bottom: 8px; }
+  .travel-tip { background: #e8f0fe; border-left: 3px solid #4285f4; padding: 8px 10px; border-radius: 6px; margin: 8px 0; font-size: 13px; line-height: 1.5; }
+  .travel-warn { background: #fff7e6; border-left: 3px solid #d4a017; padding: 8px 10px; border-radius: 6px; margin: 8px 0; font-size: 13px; line-height: 1.5; }
+  .travel-emoji { font-size: 22px; margin-right: 6px; }
+
+  /* Vocab */
+  .vocab-filters { margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .vocab-levels, .vocab-cats { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .vocab-levels::-webkit-scrollbar, .vocab-cats::-webkit-scrollbar { display: none; }
+  .vocab-levels button, .vocab-cats button {
+    flex: 0 0 auto;
+    background: #fff;
+    border: 1px solid #e5e0d6;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #555;
+    white-space: nowrap;
+  }
+  .vocab-levels button.active, .vocab-cats button.active { background: #ff5e7c; color: #fff; border-color: #ff5e7c; }
+  .vocab-search {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e0d6;
+    background: #fff;
+    font-size: 14px;
+  }
+  .vocab-stats { font-size: 12px; color: #888; margin-bottom: 10px; padding-left: 4px; }
+  .vocab-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .vocab-card.seen { background: #fafff5; }
+  .vocab-card .v-h { font-size: 22px; min-width: 64px; }
+  .vocab-card .v-info { flex: 1; min-width: 0; }
+  .vocab-card .v-p { font-size: 12px; color: #ff5e7c; font-style: italic; }
+  .vocab-card .v-m { font-size: 13px; color: #444; line-height: 1.3; }
+  .vocab-card .v-tag { font-size: 9px; background: #ff5e7c; color: #fff; padding: 2px 6px; border-radius: 8px; margin-right: 6px; }
+  .vocab-card .v-cat { font-size: 10px; color: #aaa; }
+
+  /* Grammar */
+  .grammar-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+  }
+  .grammar-item h3 { font-size: 15px; margin-bottom: 4px; color: #222; }
+  .grammar-item h3 .g-tag { background: #ff5e7c; color: #fff; padding: 1px 7px; border-radius: 8px; font-size: 10px; margin-right: 6px; vertical-align: middle; }
+  .grammar-item .g-summary { font-size: 13px; color: #666; }
+  .grammar-item .g-detail { display: none; margin-top: 12px; }
+  .grammar-item.open .g-detail { display: block; }
+  .grammar-item .g-rule { font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 10px; }
+  .grammar-item .g-rule b { color: #ff5e7c; }
+  .grammar-item .g-pattern { background: #fff7e6; border-radius: 6px; padding: 8px 10px; font-size: 14px; margin: 8px 0; font-family: monospace; color: #8a6708; }
+  .grammar-ex {
+    background: #faf7f2;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .grammar-ex .ex-content { flex: 1; }
+  .grammar-ex .ex-h { font-size: 16px; }
+  .grammar-ex .ex-p { font-size: 12px; color: #ff5e7c; font-style: italic; }
+  .grammar-ex .ex-m { font-size: 12px; color: #555; margin-top: 2px; }
+  .grammar-ex .ex-play { color: #ff5e7c; font-size: 16px; }
+
+  /* Dictation */
+  .dict-card { background: #fff; border-radius: 14px; padding: 22px 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); text-align: center; }
+  .dict-prompt-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .dict-replay {
+    background: #ff5e7c;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 999px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .dict-replay:active { transform: scale(0.96); }
+  .dict-shown { font-size: 36px; min-height: 50px; line-height: 1.2; color: #ff5e7c; font-weight: 500; margin-bottom: 8px; }
+  .dict-shown.correct { color: #2d8659; }
+  .dict-shown.wrong { color: #d64545; }
+  .dict-tones {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin: 14px 0;
+  }
+  .dt {
+    background: #fff;
+    border: 2px solid #e5e0d6;
+    border-radius: 10px;
+    padding: 10px 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .dt b { font-size: 14px; color: #222; }
+  .dt span { font-size: 18px; color: #ff5e7c; }
+  .dt i { font-size: 9px; color: #888; font-style: normal; }
+  .dt.correct { background: #d4f0dc; border-color: #2d8659; }
+  .dt.wrong { background: #fadcdc; border-color: #d64545; }
+  .dt:disabled { opacity: 0.7; cursor: default; }
+  .dict-feedback { min-height: 24px; font-size: 13px; margin-top: 8px; color: #555; }
+  .dict-next { background: #f5f1e8; border: none; padding: 10px 24px; border-radius: 8px; font-size: 13px; cursor: pointer; color: #555; font-weight: 500; }
+  .dict-stats { text-align: center; font-size: 12px; color: #888; margin-bottom: 12px; }
+  .dict-stats b { color: #ff5e7c; }
+
   /* Reels */
   #view-reels { padding: 0; margin: -14px; margin-bottom: 0; }
   .reel-stage {
@@ -476,8 +617,12 @@
 
 <nav>
   <button data-view="reels" class="active"><span class="ico">🎬</span>Reels</button>
+  <button data-view="travel"><span class="ico">✈️</span>Viatge</button>
   <button data-view="phrases"><span class="ico">💬</span>Frases</button>
   <button data-view="read"><span class="ico">📖</span>Llegir</button>
+  <button data-view="vocab"><span class="ico">📚</span>HSK</button>
+  <button data-view="grammar"><span class="ico">🧩</span>Gramàtica</button>
+  <button data-view="dictation"><span class="ico">👂</span>Dictat</button>
   <button data-view="signs"><span class="ico">🪧</span>Senyals</button>
   <button data-view="flash"><span class="ico">🃏</span>Targetes</button>
   <button data-view="quiz"><span class="ico">✍️</span>Test</button>
@@ -505,6 +650,45 @@
     <div class="info-block">Toca el botó rosa per escoltar la pronunciació. Repeteix-la en veu alta.</div>
     <div class="cat-tabs" id="cat-tabs"></div>
     <div id="phrase-list"></div>
+  </section>
+
+  <section id="view-travel" class="view">
+    <div id="travel-body"></div>
+  </section>
+
+  <section id="view-vocab" class="view">
+    <div class="info-block">Vocabulari HSK 1-4. Filtra per nivell o tema. Toca una paraula per escoltar-la i marcar-la com a vista.</div>
+    <div class="vocab-filters">
+      <div class="vocab-levels" id="vocab-levels"></div>
+      <input type="search" id="vocab-search" placeholder="Cerca (català, pinyin o hanzi)" class="vocab-search">
+      <div class="vocab-cats" id="vocab-cats"></div>
+    </div>
+    <div class="vocab-stats" id="vocab-stats"></div>
+    <div id="vocab-list"></div>
+  </section>
+
+  <section id="view-grammar" class="view">
+    <div class="info-block">Punts de gramàtica clau, explicats en català, amb exemples i àudio.</div>
+    <div id="grammar-list"></div>
+  </section>
+
+  <section id="view-dictation" class="view">
+    <div class="info-block">Pràctica de tons. L'app diu una síl·laba — has d'identificar-ne el to (1-4 o neutre).</div>
+    <div class="dict-stats" id="dict-stats"></div>
+    <div class="dict-card">
+      <div class="dict-prompt-label">Escolta i tria el to</div>
+      <button class="dict-replay" id="dict-replay">▶ Repetir àudio</button>
+      <div class="dict-shown" id="dict-shown"></div>
+      <div class="dict-tones">
+        <button data-t="1" class="dt"><b>1r</b><span>→</span><i>alt</i></button>
+        <button data-t="2" class="dt"><b>2n</b><span>↗</span><i>puja</i></button>
+        <button data-t="3" class="dt"><b>3r</b><span>↘↗</span><i>baixa-puja</i></button>
+        <button data-t="4" class="dt"><b>4t</b><span>↘</span><i>baixa</i></button>
+        <button data-t="0" class="dt"><b>0</b><span>·</span><i>neutre</i></button>
+      </div>
+      <div class="dict-feedback" id="dict-feedback"></div>
+      <button class="dict-next" id="dict-next">Següent →</button>
+    </div>
   </section>
 
   <section id="view-read" class="view">
@@ -898,6 +1082,10 @@ document.querySelectorAll('nav button').forEach(btn => {
     if (btn.dataset.view === 'flash') nextFlashcard();
     if (btn.dataset.view === 'quiz') nextQuiz();
     if (btn.dataset.view === 'read') renderReading();
+    if (btn.dataset.view === 'travel') renderTravel();
+    if (btn.dataset.view === 'grammar') renderGrammar();
+    if (btn.dataset.view === 'dictation') { if (!dictCurrent) nextDict(); }
+    if (btn.dataset.view === 'vocab') showVocab();
   });
 });
 
@@ -1098,6 +1286,600 @@ function renderTones() {
     c.onclick = () => speak(t.syl);
     grid.appendChild(c);
   });
+}
+
+// ===== VOCAB (HSK 1-4) =====
+let VOCAB = [];
+let vocabLevel = 'all';
+let vocabCat = 'all';
+let vocabQuery = '';
+async function loadVocab() {
+  if (VOCAB.length) return;
+  try {
+    const r = await fetch('vocab.json');
+    VOCAB = await r.json();
+  } catch (e) {
+    console.error('vocab load failed', e);
+    VOCAB = [];
+  }
+}
+function vocabCats() {
+  const cats = new Set();
+  VOCAB.forEach(v => cats.add(v.cat));
+  return Array.from(cats).sort();
+}
+function renderVocabFilters() {
+  // Levels
+  const lvl = document.getElementById('vocab-levels');
+  lvl.innerHTML = '';
+  ['all','1','2','3','4'].forEach(l => {
+    const b = document.createElement('button');
+    b.textContent = l === 'all' ? 'Tots' : 'HSK ' + l;
+    if (vocabLevel === l) b.classList.add('active');
+    b.onclick = () => { vocabLevel = l; renderVocabFilters(); renderVocabList(); };
+    lvl.appendChild(b);
+  });
+  // Cats
+  const cats = document.getElementById('vocab-cats');
+  cats.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.textContent = 'Totes';
+  if (vocabCat === 'all') allBtn.classList.add('active');
+  allBtn.onclick = () => { vocabCat = 'all'; renderVocabFilters(); renderVocabList(); };
+  cats.appendChild(allBtn);
+  vocabCats().forEach(c => {
+    const b = document.createElement('button');
+    b.textContent = c;
+    if (vocabCat === c) b.classList.add('active');
+    b.onclick = () => { vocabCat = c; renderVocabFilters(); renderVocabList(); };
+    cats.appendChild(b);
+  });
+}
+function renderVocabList() {
+  const list = document.getElementById('vocab-list');
+  let items = VOCAB;
+  if (vocabLevel !== 'all') items = items.filter(v => v.hsk == vocabLevel);
+  if (vocabCat !== 'all') items = items.filter(v => v.cat === vocabCat);
+  if (vocabQuery) {
+    const q = vocabQuery.toLowerCase();
+    items = items.filter(v => v.h.includes(vocabQuery) || v.p.toLowerCase().includes(q) || v.m.toLowerCase().includes(q));
+  }
+  document.getElementById('vocab-stats').textContent = `${items.length} paraules`;
+  list.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  items.slice(0, 200).forEach(v => {
+    const seen = !!(store.cards[v.h] && store.cards[v.h].reps > 0);
+    const card = document.createElement('div');
+    card.className = 'vocab-card' + (seen ? ' seen' : '');
+    card.innerHTML = `
+      <div class="v-h">${v.h}</div>
+      <div class="v-info">
+        <div><span class="v-tag">HSK${v.hsk}</span><span class="v-p">${v.p}</span></div>
+        <div class="v-m">${v.m}</div>
+        <div class="v-cat">${v.cat}</div>
+      </div>`;
+    card.onclick = () => {
+      speak(v.h);
+      const k = v.h;
+      const rec = store.cards[k] || {ease:2.0, reps:0, due:0};
+      rec.reps = (rec.reps || 0) + 1;
+      rec.due = Date.now() + 30 * 60000;
+      store.cards[k] = rec;
+      save();
+      card.classList.add('seen');
+      updateStats();
+    };
+    frag.appendChild(card);
+  });
+  list.appendChild(frag);
+  if (items.length > 200) {
+    const more = document.createElement('div');
+    more.style.cssText = 'text-align:center;color:#888;padding:14px;font-size:12px;';
+    more.textContent = `(mostrant primeres 200 de ${items.length} — usa filtres o cerca per acotar)`;
+    list.appendChild(more);
+  }
+}
+async function showVocab() {
+  if (!VOCAB.length) {
+    document.getElementById('vocab-list').innerHTML = '<div class="empty">Carregant vocabulari…</div>';
+    await loadVocab();
+  }
+  renderVocabFilters();
+  renderVocabList();
+}
+function setupVocabSearch() {
+  const s = document.getElementById('vocab-search');
+  let to = null;
+  s.addEventListener('input', () => {
+    clearTimeout(to);
+    to = setTimeout(() => { vocabQuery = s.value.trim(); renderVocabList(); }, 200);
+  });
+}
+
+// ===== TRAVEL =====
+const TRAVEL = [
+  {
+    emoji: "📱", title: "Apps essencials abans de marxar",
+    body: `<p>A la Xina molts serveis estrangers (Google, WhatsApp, Instagram, Facebook, Gmail, YouTube, Twitter/X) estan <b>bloquejats</b>. Descarrega aquestes apps <b>abans</b> d'arribar:</p>
+    <ul>
+      <li><b>Pleco</b> — diccionari xinès/anglès amb OCR (apunta la càmera a un caràcter)</li>
+      <li><b>Google Translate</b> — descarrega el paquet xinès <b>offline</b> i activa "Conversation" + càmera</li>
+      <li><b>Maps.me</b> o <b>Apple Maps</b> — Google Maps no funciona bé. Baidu Maps és el local.</li>
+      <li><b>WeChat</b> (微信) — imprescindible. Comunicació + pagaments. Demana a algú que t'afegeixi.</li>
+      <li><b>Alipay</b> (支付宝) — pagaments i mini-apps (transport, taxi, etc.). Vincula targeta Visa/Mastercard.</li>
+      <li><b>Didi</b> (滴滴) — Uber xinès. L'Alipay porta integració Didi.</li>
+      <li><b>Trip.com</b> — bitllets de tren i hotels (interfície en català/anglès)</li>
+      <li><b>VPN</b> (ExpressVPN, NordVPN, Astrill) — instal·la <b>abans</b>! No es poden descarregar a la Xina.</li>
+    </ul>
+    <div class="travel-warn">⚠️ Si vols accedir a Gmail, WhatsApp o Instagram, necessites VPN. Has d'instal·lar-la i provar-la <b>abans</b> de marxar.</div>`
+  },
+  {
+    emoji: "💳", title: "Pagaments — efectiu o mòbil?",
+    body: `<p>La Xina és gairebé sense efectiu. Els turistes paguen amb <b>Alipay</b> i <b>WeChat Pay</b>. Targeta Visa/Mastercard funciona poc.</p>
+    <ul>
+      <li>Vincula la teva targeta <b>Visa o Mastercard</b> a Alipay <b>abans</b> de marxar (Tour Pass)</li>
+      <li>El cambrer/taxista t'ensenya un <b>codi QR</b>: l'escanejes i pagues</li>
+      <li>O TU ensenyes el teu codi QR perquè l'escanegin</li>
+      <li>Frase clau: <i>扫码吗? sǎo mǎ ma? — Es paga amb QR?</i></li>
+      <li>Porta <b>una mica d'efectiu</b> (200-500 ¥) per imprevistos. Cap bitllet més gran de 100 ¥ — molts no els accepten.</li>
+      <li>Revisa la <b>comissió</b> de la teva targeta abans</li>
+    </ul>
+    <div class="travel-tip">💡 Un cafè ≈ 25 ¥, un menjar normal ≈ 30-60 ¥, taxi 30 min ≈ 50 ¥.</div>`
+  },
+  {
+    emoji: "🛂", title: "Aeroport i duana",
+    body: `<p>A l'arribada:</p>
+    <ul>
+      <li>Omple la <b>tarjeta d'arribada</b> (et la donen a l'avió o a l'aeroport)</li>
+      <li>Llum verda = res a declarar. Llum vermella = porto coses a declarar.</li>
+      <li>Pots portar 1500 ¥ d'efectiu en RMB i 5.000 USD equivalent en altres divises sense declarar</li>
+      <li>Compra una <b>SIM xinesa</b> a l'aeroport (China Mobile / China Unicom) o porta una <b>eSIM internacional</b> (Holafly, Airalo) abans</li>
+    </ul>
+    <p><b>Frases clau a la duana:</b></p>
+    <ul>
+      <li><b>旅游</b> <i>lǚyóu</i> — Turisme</li>
+      <li><b>两个星期</b> <i>liǎng ge xīngqī</i> — Dues setmanes</li>
+      <li><b>这是我的护照</b> <i>zhè shì wǒ de hùzhào</i> — Aquí té el meu passaport</li>
+    </ul>`
+  },
+  {
+    emoji: "🚇", title: "Transport — ciutat i entre ciutats",
+    body: `<p><b>Dins ciutat:</b></p>
+    <ul>
+      <li><b>Metro</b> — el més fàcil. Compra targeta a l'estació o usa Alipay (mini-app "Metro")</li>
+      <li><b>Didi</b> (taxi-app) — molt útil, integrat a Alipay. Direcció per text.</li>
+      <li><b>Taxi</b> — porta el destí <b>escrit en xinès</b> (els xofers no llegeixen alfabet llatí)</li>
+      <li><b>Bicicletes compartides</b> (Mobike, HelloBike) — escaneja i puja, paga amb Alipay</li>
+    </ul>
+    <p><b>Entre ciutats:</b></p>
+    <ul>
+      <li><b>Tren d'alta velocitat (高铁)</b> — ràpid i puntual. Beijing-Xangai en 4h 30 min.</li>
+      <li>Compra a Trip.com o a 12306 (oficial). Necessites <b>passaport</b> per recollir el bitllet.</li>
+      <li>Avió: domèstics dins la Xina poden tenir retards freqüents</li>
+    </ul>
+    <div class="travel-tip">💡 Per agafar l'AVE, arriba <b>30 min abans</b>. Hi ha control de seguretat com a l'aeroport.</div>`
+  },
+  {
+    emoji: "🍜", title: "Menjar — què demanar, què evitar",
+    body: `<p><b>Per provar:</b></p>
+    <ul>
+      <li><b>北京烤鸭</b> <i>Běijīng kǎoyā</i> — Ànec laquejat de Pequín</li>
+      <li><b>火锅</b> <i>huǒguō</i> — Olla calenta (estil hot-pot)</li>
+      <li><b>饺子</b> <i>jiǎozi</i> — Empanadetes (millor menjar al nord)</li>
+      <li><b>小笼包</b> <i>xiǎolóngbāo</i> — Pa al vapor amb brou (Xangai!)</li>
+      <li><b>麻辣烫</b> <i>málàtàng</i> — Sopa picant, tu tries els ingredients</li>
+      <li><b>煎饼</b> <i>jiānbing</i> — Crep de carrer per esmorzar</li>
+    </ul>
+    <p><b>Frases útils:</b></p>
+    <ul>
+      <li><b>不要太辣</b> <i>bú yào tài là</i> — No massa picant</li>
+      <li><b>我吃素</b> <i>wǒ chī sù</i> — Sóc vegetarià</li>
+      <li><b>这里能吃吗?</b> <i>zhèli néng chī ma?</i> — Es pot menjar aquí? (es pot seure?)</li>
+    </ul>
+    <div class="travel-warn">⚠️ Aigua de l'aixeta = NO beure. Sempre demana aigua embotellada (<b>瓶装水</b> <i>píngzhuāng shuǐ</i>) o cuita.</div>`
+  },
+  {
+    emoji: "🙏", title: "Etiqueta i costums",
+    body: `<ul>
+      <li>Saluda amb un <b>somriure i lleuger gest</b>; donar la mà està bé</li>
+      <li><b>Pots fer fotos</b> al menjar i de l'entorn, però <b>no a militars</b>, policia o senyals d'aeroport</li>
+      <li>Quan <b>brindes</b>, baixa lleugerament la copa per mostrar respecte</li>
+      <li>Al restaurant, <b>els palillos</b> mai clavats verticalment a l'arròs (ofensiu)</li>
+      <li><b>No és comú</b> deixar propina (al taxi tampoc)</li>
+      <li>Acceptar un <b>petit regal</b> amb les <b>dues mans</b> mostra educació</li>
+      <li><b>"哪里哪里"</b> <i>nǎli nǎli</i> = resposta humil quan et fan un compliment</li>
+      <li>Si algú et convida a sopar, <b>no et toqui pagar</b> — el qui convida paga (deixa que ho facin)</li>
+    </ul>
+    <div class="travel-tip">💡 Si et fan moltes preguntes personals (edat, sou, casat?) no és invasiu — és una manera d'interessar-se. Tu pots respondre breument o canviar de tema sense problema.</div>`
+  },
+  {
+    emoji: "🆘", title: "Emergències",
+    body: `<p><b>Telèfons:</b></p>
+    <ul>
+      <li><b>110</b> — Policia</li>
+      <li><b>120</b> — Ambulància</li>
+      <li><b>119</b> — Bombers</li>
+      <li><b>Ambaixada Espanya a Pequín</b>: +86 10 6532 3629</li>
+    </ul>
+    <p><b>Frases d'emergència:</b></p>
+    <ul>
+      <li><b>救命!</b> <i>jiùmìng!</i> — Ajuda!</li>
+      <li><b>叫救护车!</b> <i>jiào jiùhùchē!</i> — Truca una ambulància!</li>
+      <li><b>我丢了护照</b> <i>wǒ diū le hùzhào</i> — He perdut el passaport</li>
+      <li><b>我需要医生</b> <i>wǒ xūyào yīshēng</i> — Necessito un metge</li>
+      <li><b>我对...过敏</b> <i>wǒ duì... guòmǐn</i> — Sóc al·lèrgic/a a...</li>
+      <li><b>请打电话给西班牙大使馆</b> <i>qǐng dǎ diànhuà gěi xībānyá dàshǐguǎn</i> — Si us plau truqueu a l'ambaixada espanyola</li>
+    </ul>
+    <div class="travel-warn">⚠️ Fes <b>fotocòpies</b> del passaport i la visa. Guarda-les en un altre lloc i en digital al núvol.</div>`
+  },
+  {
+    emoji: "🏨", title: "Hotels — què saber",
+    body: `<ul>
+      <li>Reserves: Trip.com, Agoda, Booking (l'app té reserves locals també)</li>
+      <li>A l'arribada et demanen <b>passaport</b> — és obligatori per llei. Et registren amb la policia (rutinari).</li>
+      <li>Molts hotels tenen <b>aigua calenta gratis</b> al passadís per a te</li>
+      <li><b>Vials petits</b>: bates, xancletes, raspall i pasta. Maquinetes només sota petició.</li>
+      <li><b>Alguns hotels més petits no admeten estrangers</b>. Verifica abans de reservar.</li>
+    </ul>
+    <p><b>Frases:</b></p>
+    <ul>
+      <li><b>我有预订</b> <i>wǒ yǒu yùdìng</i> — Tinc reserva</li>
+      <li><b>退房几点?</b> <i>tuìfáng jǐ diǎn?</i> — A quina hora és el check-out?</li>
+      <li><b>能再住一晚吗?</b> <i>néng zài zhù yì wǎn ma?</i> — Puc allargar una nit més?</li>
+    </ul>`
+  },
+  {
+    emoji: "🛍️", title: "Compres i regatejar",
+    body: `<ul>
+      <li>Centres comercials = preu fix</li>
+      <li>Mercats turístics (com el Silk Market a Pequín) = <b>regateja sempre</b></li>
+      <li>Comença oferint <b>30-50% del preu inicial</b> i puja a poc a poc</li>
+      <li>Si et diuen "no", <b>marxa</b> — sovint et criden per fer-te oferta</li>
+    </ul>
+    <p><b>Frases per comprar:</b></p>
+    <ul>
+      <li><b>多少钱?</b> <i>duōshao qián?</i> — Quant val?</li>
+      <li><b>太贵了</b> <i>tài guì le</i> — Massa car</li>
+      <li><b>便宜一点</b> <i>piányi yìdiǎn</i> — Una mica més barat</li>
+      <li><b>有没有别的颜色?</b> <i>yǒu méiyǒu bié de yánsè?</i> — Tens altres colors?</li>
+      <li><b>我要这个</b> <i>wǒ yào zhège</i> — Vull aquest</li>
+    </ul>
+    <div class="travel-tip">💡 Coses típiques per portar: te, segell de pedra amb el teu nom, seda, llibres de cal·ligrafia, dolços tradicionals.</div>`
+  },
+  {
+    emoji: "💧", title: "Salut i petits problemes",
+    body: `<ul>
+      <li><b>No beguis l'aigua de l'aixeta</b> — sempre embotellada o cuita</li>
+      <li>Porta <b>medicaments bàsics</b> (paracetamol, antidiarreic, antihistamínic)</li>
+      <li>Les farmàcies (<b>药店</b> <i>yàodiàn</i>) tenen de tot, però poca gent parla anglès</li>
+      <li>Hospitals <b>internacionals</b> a Pequín/Xangai són cars però parlen anglès</li>
+      <li>L'<b>assegurança de viatge</b> és imprescindible</li>
+    </ul>
+    <p><b>Adaptador i wifi:</b></p>
+    <ul>
+      <li>La Xina té <b>endolls tipus A, C i I</b>. Porta un adaptador universal.</li>
+      <li>Voltatge: 220V (com Espanya)</li>
+      <li>Wifi gratis als cafès, restaurants i hotels (sovint demana SMS de verificació — útil tenir SIM xinesa o eSIM)</li>
+    </ul>`
+  },
+  {
+    emoji: "📅", title: "Top 10 — abans de marxar",
+    body: `<ol style="padding-left: 20px; line-height: 1.7; font-size: 14px;">
+      <li>✅ <b>Visa</b> tramitada (consultar requisits actuals)</li>
+      <li>✅ <b>Passaport</b> amb validesa &gt; 6 mesos</li>
+      <li>✅ <b>VPN</b> instal·lat i provat</li>
+      <li>✅ <b>WeChat + Alipay</b> instal·lats i targeta vinculada</li>
+      <li>✅ <b>Pleco</b> i <b>Google Translate offline</b> descarregats</li>
+      <li>✅ <b>Adaptador</b> universal</li>
+      <li>✅ <b>Assegurança de viatge</b></li>
+      <li>✅ <b>Fotocòpies</b> del passaport i tarjeta sanitària</li>
+      <li>✅ <b>Trip.com</b> per reserves</li>
+      <li>✅ <b>Adreces dels hotels</b> escrites en xinès (per a taxistes)</li>
+    </ol>`
+  }
+];
+function renderTravel() {
+  const body = document.getElementById('travel-body');
+  if (body.dataset.rendered) return;
+  body.innerHTML = TRAVEL.map(s => `<div class="travel-section"><h3><span class="travel-emoji">${s.emoji}</span>${s.title}</h3>${s.body}</div>`).join('');
+  body.dataset.rendered = '1';
+}
+
+// ===== GRAMMAR =====
+const GRAMMAR = [
+  {
+    tag: "Bàsic", title: "Estructura SVO",
+    summary: "Subjecte + Verb + Objecte, com en català",
+    rule: "El xinès segueix l'ordre <b>Subjecte – Verb – Objecte</b>. Els verbs <b>no es conjuguen</b>: són sempre la mateixa forma. El temps es marca amb partícules (了, 过) o paraules (今天, 明天).",
+    pattern: "S + V + O",
+    examples: [
+      {h:"我吃苹果。", p:"Wǒ chī píngguǒ.", m:"Jo menjo poma."},
+      {h:"她学中文。", p:"Tā xué zhōngwén.", m:"Ella estudia xinès."},
+      {h:"我们看电影。", p:"Wǒmen kàn diànyǐng.", m:"Mirem una pel·lícula."}
+    ]
+  },
+  {
+    tag: "Bàsic", title: "Negació: 不 vs 没",
+    summary: "不 per al present/futur i hàbits; 没 per al passat",
+    rule: "<b>不 (bù)</b>: nega present, futur, hàbits, voluntat. Va davant del verb.<br><b>没 (méi)</b>: nega el passat (el verb no s'ha realitzat) i l'existència (没有).",
+    pattern: "不 + V (general) · 没 + V (passat) · 没有 + N (no hi ha)",
+    examples: [
+      {h:"我不喝咖啡。", p:"Wǒ bù hē kāfēi.", m:"No bec cafè (en general)."},
+      {h:"我没喝咖啡。", p:"Wǒ méi hē kāfēi.", m:"No he begut cafè (avui/ara)."},
+      {h:"我没有钱。", p:"Wǒ méiyǒu qián.", m:"No tinc diners."}
+    ]
+  },
+  {
+    tag: "Bàsic", title: "Mesures (量词)",
+    summary: "Cada nom necessita una paraula de mesura",
+    rule: "En xinès, entre número/aquest/aquell i el nom es posa una <b>paraula mesura</b> (com en català 'una <i>llesca</i> de pa'). La més comuna és <b>个 (ge)</b>. Cada tipus d'objecte té la seva.",
+    pattern: "Núm + Mesura + N",
+    examples: [
+      {h:"一个人", p:"yí ge rén", m:"una persona (mesura genèrica)"},
+      {h:"两本书", p:"liǎng běn shū", m:"dos llibres (本 per a llibres)"},
+      {h:"三张票", p:"sān zhāng piào", m:"tres bitllets (张 per coses planes)"},
+      {h:"一杯水", p:"yì bēi shuǐ", m:"una tassa d'aigua (杯 per a tasses)"},
+      {h:"一件衣服", p:"yí jiàn yīfu", m:"una peça de roba (件)"},
+      {h:"一只猫", p:"yì zhī māo", m:"un gat (只 per animals petits)"}
+    ]
+  },
+  {
+    tag: "Temps", title: "了 — final i canvi",
+    summary: "Marca acció completa o canvi d'estat",
+    rule: "<b>了 (le)</b> té dos usos principals:<br>1. Després del verb = acció <b>completada</b><br>2. Final de frase = <b>canvi d'estat</b> o situació nova",
+    pattern: "V + 了 (acció acabada) · ...了 (canvi)",
+    examples: [
+      {h:"我吃了饭。", p:"Wǒ chī le fàn.", m:"He menjat (acció acabada)."},
+      {h:"下雨了!", p:"Xià yǔ le!", m:"Comença a ploure! (canvi)"},
+      {h:"她长大了。", p:"Tā zhǎngdà le.", m:"Ha crescut (canvi d'estat)."}
+    ]
+  },
+  {
+    tag: "Temps", title: "过 — experiència",
+    summary: "Indica que has fet alguna cosa abans",
+    rule: "<b>过 (guo)</b> després del verb significa que <b>has tingut l'experiència</b> de fer-ho alguna vegada (no necessàriament recent).",
+    pattern: "V + 过",
+    examples: [
+      {h:"我去过中国。", p:"Wǒ qù guo Zhōngguó.", m:"He estat a la Xina (alguna vegada)."},
+      {h:"你吃过北京烤鸭吗?", p:"Nǐ chī guo Běijīng kǎoyā ma?", m:"Has provat l'ànec de Pequín?"},
+      {h:"我没看过这部电影。", p:"Wǒ méi kàn guo zhè bù diànyǐng.", m:"No he vist aquesta pel·lícula."}
+    ]
+  },
+  {
+    tag: "Comparació", title: "比 — comparatiu",
+    summary: "A 比 B + adjectiu = A és més ___ que B",
+    rule: "Per dir <b>'A és més [adj.] que B'</b>, s'usa l'estructura <b>A 比 B + adj</b>. No es posa 很/非常.",
+    pattern: "A + 比 + B + Adj",
+    examples: [
+      {h:"我比他高。", p:"Wǒ bǐ tā gāo.", m:"Jo sóc més alt que ell."},
+      {h:"今天比昨天热。", p:"Jīntiān bǐ zuótiān rè.", m:"Avui fa més calor que ahir."},
+      {h:"中文比英文难。", p:"Zhōngwén bǐ Yīngwén nán.", m:"El xinès és més difícil que l'anglès."}
+    ]
+  },
+  {
+    tag: "Comparació", title: "跟…一样 — igualtat",
+    summary: "A 跟 B 一样 + adjectiu = A és tan ___ com B",
+    rule: "Per dir <b>'A és igual de ___ que B'</b>: <b>A 跟 B 一样 + adj</b>.",
+    pattern: "A + 跟 + B + 一样 + Adj",
+    examples: [
+      {h:"她跟我一样高。", p:"Tā gēn wǒ yíyàng gāo.", m:"Ella és tan alta com jo."},
+      {h:"这个跟那个一样贵。", p:"Zhège gēn nàge yíyàng guì.", m:"Aquest és tan car com aquell."}
+    ]
+  },
+  {
+    tag: "Modals", title: "会 / 能 / 可以",
+    summary: "Tres maneres de dir 'poder'",
+    rule: "<b>会 (huì)</b>: poder en el sentit de <b>saber fer</b> (capacitat apresa)<br><b>能 (néng)</b>: tenir la <b>capacitat física</b> o <b>oportunitat</b> de fer-ho<br><b>可以 (kěyǐ)</b>: tenir <b>permís</b> o que és <b>possible/acceptable</b>",
+    pattern: "S + 会/能/可以 + V",
+    examples: [
+      {h:"我会说中文。", p:"Wǒ huì shuō zhōngwén.", m:"Sé parlar xinès (apresa)."},
+      {h:"我今天能来。", p:"Wǒ jīntiān néng lái.", m:"Avui puc venir (capacitat)."},
+      {h:"我可以进来吗?", p:"Wǒ kěyǐ jìnlái ma?", m:"Puc entrar? (permís)"}
+    ]
+  },
+  {
+    tag: "Modals", title: "要 / 想 — voler",
+    summary: "Diferents matisos de voler",
+    rule: "<b>要 (yào)</b>: voler/necessitar (intenció ferma) o <b>haver de</b><br><b>想 (xiǎng)</b>: voler/desitjar (suau, més com 'm'agradaria')",
+    pattern: "S + 要/想 + V",
+    examples: [
+      {h:"我要走了。", p:"Wǒ yào zǒu le.", m:"Me'n vaig (decidit)."},
+      {h:"我想去旅行。", p:"Wǒ xiǎng qù lǚxíng.", m:"M'agradaria viatjar."},
+      {h:"你要喝什么?", p:"Nǐ yào hē shénme?", m:"Què vols beure?"}
+    ]
+  },
+  {
+    tag: "Connectors", title: "因为…所以 — causa i efecte",
+    summary: "Perquè... per això...",
+    rule: "<b>因为 (yīnwèi)... 所以 (suǒyǐ)...</b> = perquè... per això...<br>Es poden ometre per separat segons el context.",
+    pattern: "因为 + Causa + 所以 + Efecte",
+    examples: [
+      {h:"因为下雨, 所以我没出门。", p:"Yīnwèi xià yǔ, suǒyǐ wǒ méi chūmén.", m:"Com plovia, no he sortit."},
+      {h:"我喜欢中国, 因为很有意思。", p:"Wǒ xǐhuan Zhōngguó, yīnwèi hěn yǒuyìsi.", m:"M'agrada la Xina perquè és interessant."}
+    ]
+  },
+  {
+    tag: "Connectors", title: "虽然…但是 — concessió",
+    summary: "Tot i que... però...",
+    rule: "<b>虽然 (suīrán)... 但是 (dànshì)...</b> = tot i que... però...<br>Sempre van junts en xinès (a diferència del català).",
+    pattern: "虽然 + frase 1, 但是 + frase 2",
+    examples: [
+      {h:"虽然累, 但是很开心。", p:"Suīrán lèi, dànshì hěn kāixīn.", m:"Tot i estar cansat, sóc feliç."},
+      {h:"虽然下雨, 但是不冷。", p:"Suīrán xià yǔ, dànshì bù lěng.", m:"Tot i ploure, no fa fred."}
+    ]
+  },
+  {
+    tag: "Connectors", title: "如果…就 — condicional",
+    summary: "Si... llavors...",
+    rule: "<b>如果 (rúguǒ)... 就 (jiù)...</b> = si... llavors...",
+    pattern: "如果 + condició, 就 + resultat",
+    examples: [
+      {h:"如果下雨, 我就不去。", p:"Rúguǒ xià yǔ, wǒ jiù bú qù.", m:"Si plou, no hi aniré."},
+      {h:"如果有时间, 我就来。", p:"Rúguǒ yǒu shíjiān, wǒ jiù lái.", m:"Si tinc temps, vinc."}
+    ]
+  },
+  {
+    tag: "Possessiu", title: "的 — possessiu i adjectival",
+    summary: "Connecta dos elements (possessió o descripció)",
+    rule: "<b>的 (de)</b> connecta:<br>1. Posseïdor i posseïda: <b>我的书</b> (el meu llibre)<br>2. Adjectiu llarg + nom: <b>很贵的车</b> (un cotxe molt car)<br>S'omet sovint amb la família o relacions properes: <b>我妈妈</b> (la meva mare).",
+    pattern: "A + 的 + B",
+    examples: [
+      {h:"这是我的护照。", p:"Zhè shì wǒ de hùzhào.", m:"Aquest és el meu passaport."},
+      {h:"很好吃的菜", p:"hěn hǎochī de cài", m:"un plat molt bo"},
+      {h:"我哥哥", p:"wǒ gēge", m:"el meu germà gran (sense 的)"}
+    ]
+  },
+  {
+    tag: "Preguntes", title: "Partícules 吗 / 呢 / 吧",
+    summary: "Tres partícules per fer preguntes diferents",
+    rule: "<b>吗 (ma)</b>: pregunta sí/no, al final<br><b>呢 (ne)</b>: rebot — 'i tu?' (afirmació + 呢)<br><b>吧 (ba)</b>: suggerit suau o suposició — 'oi?'",
+    pattern: "...吗 / ...呢 / ...吧",
+    examples: [
+      {h:"你吃饭了吗?", p:"Nǐ chī fàn le ma?", m:"Has menjat?"},
+      {h:"我很好, 你呢?", p:"Wǒ hěn hǎo, nǐ ne?", m:"Estic bé, i tu?"},
+      {h:"我们走吧。", p:"Wǒmen zǒu ba.", m:"Vinga, anem."},
+      {h:"你是西班牙人吧?", p:"Nǐ shì xībānyá rén ba?", m:"Ets espanyol, oi?"}
+    ]
+  },
+  {
+    tag: "Preguntes", title: "Paraules interrogatives",
+    summary: "什么, 谁, 哪里, 几, 多少, 怎么...",
+    rule: "Es posen <b>al lloc de la informació</b> que falta, sense canviar l'ordre. <b>NO cal afegir 吗</b>.",
+    pattern: "S + V + (paraula-Q) + ...",
+    examples: [
+      {h:"你叫什么名字?", p:"Nǐ jiào shénme míngzi?", m:"Com et dius?"},
+      {h:"她是谁?", p:"Tā shì shéi?", m:"Qui és ella?"},
+      {h:"你住在哪里?", p:"Nǐ zhù zài nǎli?", m:"On vius?"},
+      {h:"多少钱?", p:"Duōshao qián?", m:"Quant val?"},
+      {h:"几点?", p:"Jǐ diǎn?", m:"Quina hora?"},
+      {h:"怎么去?", p:"Zěnme qù?", m:"Com s'hi va?"}
+    ]
+  },
+  {
+    tag: "Avançat", title: "把 — focus en l'objecte",
+    summary: "Estructura per emfatitzar què passa amb l'objecte",
+    rule: "L'estructura <b>S + 把 + O + V + (resultat)</b> serveix per dir què passa amb l'objecte. El verb sempre necessita un complement (resultat, direcció, durada, 了, etc.).",
+    pattern: "S + 把 + O + V + complement",
+    examples: [
+      {h:"我把书放在桌子上。", p:"Wǒ bǎ shū fàng zài zhuōzi shàng.", m:"He posat el llibre damunt la taula."},
+      {h:"请把窗户打开。", p:"Qǐng bǎ chuānghu dǎkāi.", m:"Si us plau, obre la finestra."}
+    ]
+  },
+  {
+    tag: "Avançat", title: "Direccionals 来/去",
+    summary: "Cap a (qui parla) / des de (qui parla)",
+    rule: "<b>来 (lái)</b> = venir cap a qui parla.<br><b>去 (qù)</b> = anar lluny de qui parla.<br>Es combinen amb 上, 下, 进, 出, 回 per donar direccions complexes (上来, 出去, etc.).",
+    pattern: "V + 来/去",
+    examples: [
+      {h:"过来!", p:"Guò lái!", m:"Vine!"},
+      {h:"我要回去。", p:"Wǒ yào huí qù.", m:"Me'n torno."},
+      {h:"他进来了。", p:"Tā jìn lái le.", m:"Ha entrat (cap aquí)."}
+    ]
+  },
+  {
+    tag: "Hora", title: "Temps i durada",
+    summary: "Quan / quant de temps",
+    rule: "Les <b>expressions de temps</b> van <b>davant del verb</b> (en general). La <b>durada</b> va <b>després del verb</b>, o entre verb i objecte.",
+    pattern: "S + Temps + V + ... · S + V + (O) + Durada",
+    examples: [
+      {h:"我明天去北京。", p:"Wǒ míngtiān qù Běijīng.", m:"Demà vaig a Pequín. (temps abans del verb)"},
+      {h:"我学了三年中文。", p:"Wǒ xué le sān nián zhōngwén.", m:"He estudiat xinès tres anys. (durada)"},
+      {h:"她睡了八个小时。", p:"Tā shuì le bā ge xiǎoshí.", m:"Ha dormit 8 hores."}
+    ]
+  }
+];
+function renderGrammar() {
+  const list = document.getElementById('grammar-list');
+  if (list.dataset.rendered) return;
+  list.innerHTML = '';
+  GRAMMAR.forEach((g, i) => {
+    const div = document.createElement('div');
+    div.className = 'grammar-item';
+    const exHtml = g.examples.map(e => `<div class="grammar-ex" data-h="${e.h}"><div class="ex-content"><div class="ex-h">${e.h}</div><div class="ex-p">${e.p}</div><div class="ex-m">${e.m}</div></div><div class="ex-play">▶</div></div>`).join('');
+    div.innerHTML = `
+      <h3><span class="g-tag">${g.tag}</span>${g.title}</h3>
+      <div class="g-summary">${g.summary}</div>
+      <div class="g-detail">
+        <div class="g-rule">${g.rule}</div>
+        <div class="g-pattern">${g.pattern}</div>
+        ${exHtml}
+      </div>`;
+    div.addEventListener('click', (e) => {
+      const ex = e.target.closest('.grammar-ex');
+      if (ex) { speak(ex.dataset.h); return; }
+      div.classList.toggle('open');
+    });
+    list.appendChild(div);
+  });
+  list.dataset.rendered = '1';
+}
+
+// ===== DICTATION =====
+const DICT_POOL = [
+  {s:"mā", t:1, m:"mare 妈"}, {s:"má", t:2, m:"cànem 麻"}, {s:"mǎ", t:3, m:"cavall 马"}, {s:"mà", t:4, m:"renyar 骂"},
+  {s:"shī", t:1, m:"poesia 诗"}, {s:"shí", t:2, m:"deu 十"}, {s:"shǐ", t:3, m:"història 史"}, {s:"shì", t:4, m:"ser 是"},
+  {s:"yī", t:1, m:"un 一"}, {s:"yí", t:2, m:"avia 姨"}, {s:"yǐ", t:3, m:"cadira 椅"}, {s:"yì", t:4, m:"art 艺"},
+  {s:"bā", t:1, m:"vuit 八"}, {s:"bá", t:2, m:"arrencar 拔"}, {s:"bǎ", t:3, m:"agafar 把"}, {s:"bà", t:4, m:"papà 爸"},
+  {s:"hē", t:1, m:"beure 喝"}, {s:"hé", t:2, m:"i 和"}, {s:"hě", t:3, m:""}, {s:"hè", t:4, m:"felicitar 贺"},
+  {s:"qī", t:1, m:"set 七"}, {s:"qí", t:2, m:"muntar 骑"}, {s:"qǐ", t:3, m:"aixecar-se 起"}, {s:"qì", t:4, m:"aire 气"},
+  {s:"jī", t:1, m:"pollastre 鸡"}, {s:"jí", t:2, m:"recollir 集"}, {s:"jǐ", t:3, m:"quants 几"}, {s:"jì", t:4, m:"recordar 记"},
+  {s:"tā", t:1, m:"ell/ella 他/她"}, {s:"tái", t:2, m:"escenari 台"}, {s:"tǎ", t:3, m:"torre 塔"}, {s:"tà", t:4, m:"trepitjar 踏"},
+  {s:"gōng", t:1, m:"treball 工"}, {s:"gōng", t:1, m:"públic 公"}, {s:"gǔ", t:3, m:"antic 古"}, {s:"gù", t:4, m:"fix 故"},
+  {s:"zài", t:4, m:"a, en 在"}, {s:"zǎi", t:3, m:"any 仔"},
+  {s:"hǎo", t:3, m:"bo 好"}, {s:"hào", t:4, m:"número 号"},
+  {s:"nǐ", t:3, m:"tu 你"}, {s:"ní", t:2, m:"fang 泥"},
+  {s:"de", t:0, m:"partícula 的"}, {s:"le", t:0, m:"partícula 了"}, {s:"ma", t:0, m:"partícula 吗"}, {s:"ne", t:0, m:"partícula 呢"}, {s:"ba", t:0, m:"partícula 吧"},
+  {s:"chī", t:1, m:"menjar 吃"}, {s:"chá", t:2, m:"te 茶"}, {s:"chǎo", t:3, m:"saltar 炒"}, {s:"chē", t:1, m:"cotxe 车"},
+  {s:"shū", t:1, m:"llibre 书"}, {s:"shǔ", t:3, m:"comptar 数"}, {s:"shù", t:4, m:"arbre 树"},
+  {s:"zhī", t:1, m:"saber 知"}, {s:"zhí", t:2, m:"recte 直"}, {s:"zhǐ", t:3, m:"paper 纸"}, {s:"zhì", t:4, m:"a, fins 至"},
+  {s:"xíng", t:2, m:"caminar 行"}, {s:"xìng", t:4, m:"cognom 姓"}, {s:"xǐng", t:3, m:"despertar-se 醒"}
+];
+let dictCurrent = null;
+let dictStats = { ok: 0, total: 0, streak: 0 };
+function nextDict() {
+  let pool = DICT_POOL;
+  // pick a random
+  dictCurrent = pool[Math.floor(Math.random() * pool.length)];
+  // reset UI
+  document.getElementById('dict-shown').textContent = '?';
+  document.getElementById('dict-shown').className = 'dict-shown';
+  document.getElementById('dict-feedback').textContent = '';
+  document.querySelectorAll('.dt').forEach(b => { b.classList.remove('correct', 'wrong'); b.disabled = false; });
+  // play after a tiny delay
+  setTimeout(() => speak(dictCurrent.s), 200);
+}
+function answerDict(t) {
+  if (!dictCurrent) return;
+  const buttons = document.querySelectorAll('.dt');
+  buttons.forEach(b => b.disabled = true);
+  const chosen = document.querySelector(`.dt[data-t="${t}"]`);
+  const correctBtn = document.querySelector(`.dt[data-t="${dictCurrent.t}"]`);
+  dictStats.total += 1;
+  document.getElementById('dict-shown').textContent = dictCurrent.s;
+  if (t === dictCurrent.t) {
+    chosen.classList.add('correct');
+    document.getElementById('dict-shown').classList.add('correct');
+    document.getElementById('dict-feedback').innerHTML = `✓ Correcte! ${dictCurrent.m ? `(${dictCurrent.m})` : ''}`;
+    dictStats.ok += 1;
+    dictStats.streak += 1;
+  } else {
+    chosen.classList.add('wrong');
+    correctBtn.classList.add('correct');
+    document.getElementById('dict-shown').classList.add('wrong');
+    document.getElementById('dict-feedback').innerHTML = `✗ Era el to ${dictCurrent.t === 0 ? 'neutre' : dictCurrent.t} ${dictCurrent.m ? `(${dictCurrent.m})` : ''}`;
+    dictStats.streak = 0;
+  }
+  updateDictStats();
+}
+function updateDictStats() {
+  const pct = dictStats.total ? Math.round(100 * dictStats.ok / dictStats.total) : 0;
+  document.getElementById('dict-stats').innerHTML = `Encerts: <b>${dictStats.ok}/${dictStats.total}</b> (${pct}%) · Ratxa: <b>${dictStats.streak}</b>`;
+}
+function setupDictation() {
+  document.querySelectorAll('.dt').forEach(b => b.addEventListener('click', () => answerDict(parseInt(b.dataset.t))));
+  document.getElementById('dict-replay').addEventListener('click', () => { if (dictCurrent) speak(dictCurrent.s); });
+  document.getElementById('dict-next').addEventListener('click', nextDict);
+  updateDictStats();
 }
 
 // ===== READING =====
@@ -1961,6 +2743,8 @@ renderTones();
 renderReadSelector();
 setupReadingControls();
 renderReading();
+setupDictation();
+setupVocabSearch();
 updateStats();
 
 // Warm up TTS engine

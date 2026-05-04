@@ -1,9 +1,10 @@
-const CACHE = "jinmanxue-v4";
+const CACHE = "jinmanxue-v5";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon.svg"
+  "./icon.svg",
+  "./vocab.json"
 ];
 
 self.addEventListener("install", (e) => {
