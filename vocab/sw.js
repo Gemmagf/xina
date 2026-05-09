@@ -1,28 +1,15 @@
-// Service worker — diari de viatge Xina 2026
-// Estratègia:
-//   - Network-first per a HTML (perquè els canvis es vegin de seguida)
-//   - Stale-while-revalidate per a assets propis i Firebase SDK / Google Fonts
-//   - Les dades del viatge (Firestore) ja es desen a IndexedDB pel propi SDK
-
-const CACHE = "xina-viatge-v2";
-const SHELL = [
+const CACHE = "jinmanxue-v5";
+const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon.svg"
-];
-
-// Origens externs que ens interessa cachear (fonts + Firebase SDK + Leaflet)
-const EXTERNAL_CACHEABLE = [
-  "https://fonts.googleapis.com",
-  "https://fonts.gstatic.com",
-  "https://www.gstatic.com/firebasejs",
-  "https://unpkg.com/leaflet"
+  "./icon.svg",
+  "./vocab.json"
 ];
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
 });
 
 self.addEventListener("activate", (e) => {
@@ -39,22 +26,13 @@ function isHTML(req) {
   return accept.includes("text/html");
 }
 
-function isExternalCacheable(url) {
-  return EXTERNAL_CACHEABLE.some((prefix) => url.startsWith(prefix));
-}
-
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
+  const sameOrigin = new URL(req.url).origin === location.origin;
+  if (!sameOrigin) return;
 
-  const url = new URL(req.url);
-  const sameOrigin = url.origin === location.origin;
-  const externalCacheable = isExternalCacheable(req.url);
-
-  // No interceptem Firestore / Google APIs (les peticions de dades les gestiona el SDK)
-  if (!sameOrigin && !externalCacheable) return;
-
-  // HTML: network-first
+  // Network-first for HTML so updates show immediately when online
   if (isHTML(req)) {
     e.respondWith(
       fetch(req).then((res) => {
@@ -68,11 +46,11 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Assets: stale-while-revalidate
+  // Stale-while-revalidate for other assets
   e.respondWith(
     caches.match(req).then((cached) => {
       const fetchPromise = fetch(req).then((res) => {
-        if (res && (res.ok || res.type === "opaque")) {
+        if (res && res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy));
         }

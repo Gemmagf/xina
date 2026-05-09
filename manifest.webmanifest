@@ -1,13 +1,13 @@
 {
-  "name": "瑾曼学 · Xinès",
-  "short_name": "瑾曼学",
-  "description": "Aprèn xinès offline — llegir, parlar, frases, reels i lliçons",
-  "start_url": "./",
+  "name": "中国 · Diari de viatge — Gemma & Isabel",
+  "short_name": "中国 2026",
+  "description": "Diari de viatge a la Xina — itinerari, idees, pendents, vols i trens, sincronitzat entre Gemma i Isabel",
+  "start_url": "./?id=xina-2026",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#faf7f2",
-  "theme_color": "#ff5e7c",
+  "background_color": "#f4ede0",
+  "theme_color": "#c8341f",
   "lang": "ca",
   "icons": [
     {
