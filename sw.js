@@ -1,10 +1,13 @@
 // Service worker — diari de viatge Xina 2026
 // Estratègia:
+//   - Pre-cache EAGER de l'shell + recursos externs crítics durant install
 //   - Network-first per a HTML (perquè els canvis es vegin de seguida)
-//   - Stale-while-revalidate per a assets propis i Firebase SDK / Google Fonts
+//   - Stale-while-revalidate per a assets propis i Firebase SDK / Google Fonts / Leaflet
 //   - Les dades del viatge (Firestore) ja es desen a IndexedDB pel propi SDK
 
-const CACHE = "xina-viatge-v2";
+const CACHE = "xina-viatge-v3";
+
+// Shell propi
 const SHELL = [
   "./",
   "./index.html",
@@ -12,7 +15,19 @@ const SHELL = [
   "./icon.svg"
 ];
 
-// Origens externs que ens interessa cachear (fonts + Firebase SDK + Leaflet)
+// Recursos externs que volem garantir disponibles offline (best-effort)
+const EXTERNAL_PRECACHE = [
+  // Firebase modular SDK
+  "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+  "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+  // Leaflet
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+  // Google Fonts CSS (les fonts en si es cacheen quan es requereixen)
+  "https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap"
+];
+
+// Prefixos d'origens externs que es poden cachear sota demanda (per sw-while-revalidate)
 const EXTERNAL_CACHEABLE = [
   "https://fonts.googleapis.com",
   "https://fonts.gstatic.com",
@@ -22,7 +37,20 @@ const EXTERNAL_CACHEABLE = [
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE);
+    // Shell propi: si falla, fallem (és crític)
+    await c.addAll(SHELL);
+    // Externs: best-effort, ignorem fallades individuals
+    await Promise.allSettled(EXTERNAL_PRECACHE.map(async (url) => {
+      try {
+        const res = await fetch(url, { mode: 'cors' });
+        if (res && (res.ok || res.type === 'opaque')) {
+          await c.put(url, res);
+        }
+      } catch (e) { /* silenci */ }
+    }));
+  })());
 });
 
 self.addEventListener("activate", (e) => {
@@ -54,7 +82,7 @@ self.addEventListener("fetch", (e) => {
   // No interceptem Firestore / Google APIs (les peticions de dades les gestiona el SDK)
   if (!sameOrigin && !externalCacheable) return;
 
-  // HTML: network-first
+  // HTML: network-first amb fallback a cache
   if (isHTML(req)) {
     e.respondWith(
       fetch(req).then((res) => {
@@ -81,4 +109,13 @@ self.addEventListener("fetch", (e) => {
       return cached || fetchPromise;
     })
   );
+});
+
+// Comunicació amb la pàgina (per ex. consultar estat del cache)
+self.addEventListener("message", (e) => {
+  if (e.data && e.data.type === "CACHE_STATUS") {
+    caches.open(CACHE).then(c => c.keys()).then(keys => {
+      e.source.postMessage({ type: "CACHE_STATUS_REPLY", count: keys.length, urls: keys.map(r => r.url) });
+    });
+  }
 });

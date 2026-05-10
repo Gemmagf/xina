@@ -1220,6 +1220,41 @@
     color: var(--ink);
   }
 
+  /* iOS install hint */
+  .ios-install-hint {
+    position: fixed;
+    bottom: 56px; /* above share bar */
+    left: 8px; right: 8px;
+    background: var(--cream);
+    border: 2px solid var(--vermilion);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 12px 14px;
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .ios-install-hint strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--vermilion);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .ios-install-hint > div { flex: 1; }
+  .ios-install-hint button {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; line-height: 1; opacity: 0.5;
+    padding: 0 4px; color: var(--ink);
+  }
+  .ios-install-hint button:hover { opacity: 1; color: var(--vermilion); }
+
   /* loading state */
   .loading-overlay {
     position: fixed; inset: 0;
@@ -1427,8 +1462,17 @@
 
 <div class="share-bar">
   <span class="share-bar-text">Última edició: <span id="last-edit">—</span></span>
+  <button class="share-btn ghost" id="btn-install" title="Instal·lar com a app" style="display:none">📲 Instal·lar</button>
   <button class="share-btn ghost" id="btn-converter" title="Convertidor de moneda">¥ €</button>
   <button class="share-btn" id="btn-share">Compartir</button>
+</div>
+
+<div class="ios-install-hint" id="ios-install-hint" style="display:none">
+  <div>
+    <strong>📲 Instal·la l'app al iPhone:</strong>
+    toca <span style="font-size:18px;vertical-align:middle">⎘</span> Compartir → "Afegir a la pantalla d'inici" → així funcionarà offline com una app real.
+  </div>
+  <button onclick="document.getElementById('ios-install-hint').style.display='none'; localStorage.setItem('xina-ios-hint-dismissed','1')">×</button>
 </div>
 
 <div class="modal-bg" id="modal-converter">
@@ -2909,10 +2953,78 @@ function renderAll() {
 // kickoff
 initFirebase();
 
+// ============ ONLINE / OFFLINE DETECTOR ============
+function updateNetworkStatus() {
+  if (!navigator.onLine) {
+    setSync('offline', 'Offline · canvis es desaran al tornar');
+  } else if (isInitialized) {
+    setSync('online', 'Sincronitzat');
+  }
+}
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+// Comprova a l'arrencada
+if (!navigator.onLine) {
+  setTimeout(() => setSync('offline', 'Offline · canvis es desaran al tornar'), 100);
+}
+
+// ============ INSTALL PROMPT (PWA) ============
+let deferredPrompt = null;
+const installBtn = document.getElementById('btn-install');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    }
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  if (installBtn) installBtn.style.display = 'none';
+  deferredPrompt = null;
+});
+
+// iOS Safari no suporta beforeinstallprompt → mostrem hint manual
+(() => {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  const dismissed = localStorage.getItem('xina-ios-hint-dismissed') === '1';
+  if (isIOS && !isStandalone && !dismissed) {
+    const hint = document.getElementById('ios-install-hint');
+    if (hint) setTimeout(() => hint.style.display = 'flex', 2000);
+  }
+})();
+
 // ============ SERVICE WORKER (offline) ============
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW failed:', err));
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => {
+        // Quan hi ha una versió nova esperant, l'activem (skipWaiting ja ho fa, però ens assegurem)
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          if (newSW) {
+            newSW.addEventListener('statechange', () => {
+              if (newSW.state === 'activated') {
+                console.log('[SW] Nova versió activa — recarrega per actualitzar');
+              }
+            });
+          }
+        });
+      })
+      .catch(err => console.warn('SW failed:', err));
   });
 }
 </script>
