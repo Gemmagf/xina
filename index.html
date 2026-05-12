@@ -1800,9 +1800,17 @@ const DEFAULT_DATA = {
 // ============ FIREBASE INIT ============
 const app = initializeApp(firebaseConfig);
 // Offline persistence — desa les dades a IndexedDB perquè l'app funcioni sense connexió
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+// Si la persistència falla (IndexedDB corromput, mode privat sense storage, etc.), caiem a memòria.
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+  console.log('[init] Firestore: persistent cache OK');
+} catch (e) {
+  console.warn('[init] Persistent cache failed, falling back to memory:', e);
+  db = initializeFirestore(app, {});
+}
 
 // trip ID from URL or default
 const params = new URLSearchParams(window.location.search);
@@ -1833,18 +1841,29 @@ function setSync(status, text) {
 // ============ INIT — load or create doc ============
 async function initFirebase() {
   setSync('syncing', 'Connectant…');
+  console.log('[init] Carregant document trip:', tripId);
+
+  // Timeout defensiu: si Firebase no respon en 8s, segueix offline amb DEFAULT_DATA
+  const TIMEOUT_MS = 8000;
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Firebase timeout (' + TIMEOUT_MS + 'ms) — possiblement ad blocker?')), TIMEOUT_MS)
+  );
+
   try {
-    const snap = await getDoc(tripRef);
+    const snap = await Promise.race([getDoc(tripRef), timeoutPromise]);
+    console.log('[init] Document carregat. Existeix:', snap.exists());
     if (snap.exists()) {
       state = mergeWithDefaults(snap.data());
     } else {
       // first time — create with defaults
       await setDoc(tripRef, { ...state, meta: { lastEdit: new Date().toISOString(), editor: 'init' } });
+      console.log('[init] Document creat amb defaults');
     }
     isInitialized = true;
     document.getElementById('loading').classList.add('hidden');
     renderAll();
     setSync('online', 'Sincronitzat');
+    console.log('[init] Sync activa');
     // listen for changes
     onSnapshot(tripRef, (snapshot) => {
       if (suppressNextSnapshot) { suppressNextSnapshot = false; return; }
@@ -1854,14 +1873,19 @@ async function initFirebase() {
       renderAll();
       setSync('online', 'Sincronitzat');
     }, (err) => {
-      console.error(err);
+      console.error('[snapshot] error:', err);
       setSync('offline', 'Error de connexió');
     });
   } catch(err) {
-    console.error('Firebase init error:', err);
+    console.error('[init] Firebase error:', err);
+    // En lloc de quedar-nos penjats, mostrem l'app amb defaults i avisem
+    isInitialized = true;
     document.getElementById('loading').classList.add('hidden');
-    setSync('offline', 'Sense connexió');
-    alert('Error connectant amb Firebase. Comprova la configuració. Detalls: ' + err.message);
+    renderAll();
+    setSync('offline', 'Offline — defaults');
+    if (err.message && err.message.includes('timeout')) {
+      console.warn('[init] Firebase no respon. Si tens ad blocker o privacy extension, prova de desactivar-la o entra en mode incògnit. L\'app funciona offline amb dades per defecte.');
+    }
   }
 }
 
