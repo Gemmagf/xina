@@ -5,7 +5,7 @@
 //   - Stale-while-revalidate per a assets propis i Firebase SDK / Google Fonts / Leaflet
 //   - Les dades del viatge (Firestore) ja es desen a IndexedDB pel propi SDK
 
-const CACHE = "xina-viatge-v3";
+const CACHE = "xina-viatge-v4";
 
 // Shell propi
 const SHELL = [
@@ -32,7 +32,11 @@ const EXTERNAL_CACHEABLE = [
   "https://fonts.googleapis.com",
   "https://fonts.gstatic.com",
   "https://www.gstatic.com/firebasejs",
-  "https://unpkg.com/leaflet"
+  "https://unpkg.com/leaflet",
+  "https://upload.wikimedia.org",          // Imatges de Wikipedia/Wikimedia
+  "https://en.wikipedia.org/api/rest_v1",  // Wikipedia API per a thumbnails
+  "https://zh.wikipedia.org/api/rest_v1",
+  "https://es.wikipedia.org/api/rest_v1"
 ];
 
 self.addEventListener("install", (e) => {
