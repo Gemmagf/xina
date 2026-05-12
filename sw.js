@@ -5,7 +5,7 @@
 //   - Stale-while-revalidate per a assets propis i Firebase SDK / Google Fonts / Leaflet
 //   - Les dades del viatge (Firestore) ja es desen a IndexedDB pel propi SDK
 
-const CACHE = "xina-viatge-v4";
+const CACHE = "xina-viatge-v5";
 
 // Shell propi
 const SHELL = [
