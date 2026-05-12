@@ -481,11 +481,85 @@
     padding: 18px 18px 14px;
     position: relative;
     box-shadow: 4px 4px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+  }
+  .idea-img-wrap {
+    margin: -18px -18px 12px;
+    height: 140px;
+    background: var(--paper-2);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--ink);
+  }
+  .idea-img-empty {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    opacity: 0.25;
+    background: linear-gradient(135deg, var(--paper-2) 0%, var(--cream) 100%);
+    z-index: 1;
+  }
+  .idea-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 2;
+  }
+  .idea-img.loaded { opacity: 1; }
+  .idea-img-edit {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(26,20,16,0.7);
+    color: var(--cream);
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .idea-card:hover .idea-img-edit { opacity: 1; }
+  .idea-loc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--vermilion-deep);
+    margin: 0 0 8px;
+    opacity: 0.9;
+    outline: none;
+  }
+  .idea-loc:empty::before {
+    content: '+ ubicació';
+    opacity: 0.4;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0.05em;
+  }
+  .idea-loc[contenteditable]:focus { color: var(--vermilion); }
+  .idea-card-add {
+    flex-direction: row !important; /* override flex-direction column */
   }
   .idea-card[data-cat="festival"] { background: #f7e6d4; }
   .idea-card[data-cat="trip"] { background: #e8efe5; }
   .idea-card[data-cat="beauty"] { background: #f3dfde; }
   .idea-card[data-cat="menjar"] { background: #fbf0d4; }
+  .idea-card[data-cat="cafe"] { background: #ede2d4; }
   .idea-cat {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
@@ -1220,6 +1294,57 @@
     color: var(--ink);
   }
 
+  /* Upgrade banner */
+  .upgrade-banner {
+    background: var(--vermilion);
+    color: var(--cream);
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 14px 16px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .upgrade-banner strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    display: block;
+    margin-bottom: 3px;
+    opacity: 0.95;
+  }
+  .upgrade-banner > div { flex: 1; }
+  .upgrade-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .upgrade-btn:hover { background: var(--vermilion-deep); border: 2px solid var(--ink); }
+  .upgrade-banner .dismiss {
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    cursor: pointer;
+    font-size: 22px;
+    padding: 0 4px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+  .upgrade-banner .dismiss:hover { opacity: 1; }
+
   /* iOS install hint */
   .ios-install-hint {
     position: fixed;
@@ -1312,6 +1437,15 @@
     </span>
   </div>
 
+  <div class="upgrade-banner" id="upgrade-banner" style="display:none">
+    <div>
+      <strong>🆕 Pla actualitzat disponible</strong>
+      Hores reals dels vols Air China (FLH8OM), nova ruta Chengdu→Chongqing 23 jun, Mutianyu 30→1 jul, +50 idees. No sobreescriu res existent.
+    </div>
+    <button class="upgrade-btn" id="btn-apply-upgrade">Aplicar</button>
+    <button class="dismiss" id="btn-dismiss-upgrade" title="Tancar">×</button>
+  </div>
+
   <nav class="tabs">
     <button class="tab active" data-tab="itinerari"><span class="tab-num">壹</span>Itinerari</button>
     <button class="tab" data-tab="idees"><span class="tab-num">贰</span>Idees</button>
@@ -1343,6 +1477,7 @@
       <button class="filter-btn" data-filter="trip">One-day trips</button>
       <button class="filter-btn" data-filter="beauty">Beauty & spa</button>
       <button class="filter-btn" data-filter="menjar">Menjar</button>
+      <button class="filter-btn" data-filter="cafe">Cafès</button>
     </div>
     <div class="idea-grid" id="idea-grid"></div>
   </section>
@@ -1558,15 +1693,14 @@ const DEFAULT_DATA = {
     { date: '2026-07-02', day: 'Dj', where: 'Ginebra → Zuric', tag: 'train', notes: 'Gemma marxa cap a casa.', activities: ['Tornar a Zuric'] }
   ],
   ideas: [
-    { cat: 'festival', title: 'Festival dels barcos del drac', desc: 'Duanwu Jie (端午节). El 2026 cau el 19 de juny. Confirmar a Chengdu on es celebra.' },
-    { cat: 'trip', title: 'Jiuzhaigou', desc: 'Llacs turqueses i cascades — uns 8-10h des de Chengdu. Cal mirar si val la pena per pocs dies.' },
-    { cat: 'trip', title: 'Mont Emei', desc: 'Una de les muntanyes sagrades budistes. Excursió de 2 dies des de Chengdu.' },
-    { cat: 'trip', title: 'Siguniang Shan', desc: 'Les "Quatre Germanes" — alpinisme suau, paisatges himalaiencs.' },
-    { cat: 'trip', title: 'Leshan Giant Buddha', desc: 'Buda gegant esculpit a la roca, day trip fàcil des de Chengdu.' },
-    { cat: 'beauty', title: 'Massatge tradicional xinès', desc: 'Tuina i acupressió. Demanar a la Lin un lloc bo a Chengdu.' },
-    { cat: 'beauty', title: 'Foot spa', desc: 'Tradicional als barris locals — barat i deliciós després de caminar.' },
-    { cat: 'menjar', title: 'Hotpot Sichuan', desc: 'Imprescindible a Chengdu. Mala (麻辣) — picant + entumit.' },
-    { cat: 'menjar', title: 'Pato laqueado', desc: 'A Pequín. Quanjude o un lloc més modern recomanat.' }
+    { cat: 'festival', title: 'Festival dels barcos del drac', loc:'Chengdu / arreu Xina', wiki:'Dragon Boat Festival', desc: 'Duanwu Jie (端午节). El 2026 cau el 19 de juny. Confirmar a Chengdu on es celebra.' },
+    { cat: 'trip', title: 'Jiuzhaigou', loc:'Sichuan (~8-10h Chengdu)', wiki:'Jiuzhaigou', desc: 'Llacs turqueses i cascades — uns 8-10h des de Chengdu. Cal mirar si val la pena per pocs dies.' },
+    { cat: 'trip', title: 'Mont Emei', loc:'Sichuan (2 dies)', wiki:'Mount Emei', desc: 'Una de les muntanyes sagrades budistes. Excursió de 2 dies des de Chengdu.' },
+    { cat: 'trip', title: 'Siguniang Shan', loc:'Sichuan (alpinisme)', wiki:'Mount Siguniang', desc: 'Les "Quatre Germanes" — alpinisme suau, paisatges himalaiencs.' },
+    { cat: 'trip', title: 'Leshan Giant Buddha', loc:'Sichuan (~2.5h Chengdu)', wiki:'Leshan Giant Buddha', desc: 'Buda gegant esculpit a la roca, day trip fàcil des de Chengdu.' },
+    { cat: 'beauty', title: 'Massatge tradicional xinès', loc:'Chengdu', wiki:'Tui na', desc: 'Tuina i acupressió. Demanar a la Lin un lloc bo a Chengdu.' },
+    { cat: 'menjar', title: 'Hotpot Sichuan', loc:'Chengdu', wiki:'Sichuan hot pot', desc: 'Imprescindible a Chengdu. Mala (麻辣) — picant + entumit.' },
+    { cat: 'menjar', title: 'Pato laqueado', loc:'Pequín', wiki:'Peking duck', desc: 'A Pequín. Quanjude o un lloc més modern recomanat.' }
   ],
   todos: [
     { text: 'Visat Xina', owner: 'both', done: false },
@@ -1923,6 +2057,64 @@ function renderItinerary() {
 
 // ============ IDEAS ============
 let ideaFilter = 'all';
+
+const CAT_EMOJI = { festival:'🎏', trip:'🗺️', beauty:'💆', menjar:'🍜', cafe:'☕' };
+
+// Cache d'imatges (Wikipedia)
+async function fetchWikipediaImage(query) {
+  if (!query) return null;
+  const cacheKey = 'xina-img:' + query.toLowerCase().trim();
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) return cached === '__none__' ? null : cached;
+  // Prova en castellà, anglès i xinès
+  for (const lang of ['en', 'zh', 'es']) {
+    try {
+      const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const src = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
+      if (src) {
+        // Get higher res if possible
+        const hiRes = src.replace(/\/\d+px-/, '/640px-');
+        localStorage.setItem(cacheKey, hiRes);
+        return hiRes;
+      }
+    } catch (e) { /* try next */ }
+  }
+  localStorage.setItem(cacheKey, '__none__');
+  return null;
+}
+
+// Genera la query de Wikipedia a partir d'una idea
+function ideaWikiQuery(idea) {
+  if (idea.wiki) return idea.wiki;
+  // Treu emojis i text entre parèntesis
+  let q = (idea.title || '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').replace(/\([^)]*\)/g, '').trim();
+  // Treu prefixos comuns
+  q = q.replace(/^(🏨|🏯|🌅|🌇)\s*/, '').trim();
+  return q;
+}
+
+// Carrega imatges per a totes les cards (eager amb cache localStorage, ràpid amb cache)
+function loadIdeaImage(card, idea) {
+  const imgEl = card.querySelector('.idea-img');
+  if (!imgEl) return;
+  const setSrc = (src) => {
+    if (!src) return;
+    imgEl.onload = () => imgEl.classList.add('loaded');
+    imgEl.onerror = () => { imgEl.removeAttribute('src'); };
+    imgEl.src = src;
+  };
+  if (idea.img) {
+    setSrc(idea.img);
+    return;
+  }
+  const q = ideaWikiQuery(idea);
+  if (!q) return;
+  fetchWikipediaImage(q).then(src => { if (src) setSrc(src); });
+}
+
 function renderIdeas() {
   const grid = document.getElementById('idea-grid');
   const focused = document.activeElement;
@@ -1938,23 +2130,33 @@ function renderIdeas() {
     const card = document.createElement('div');
     card.className = 'idea-card';
     card.dataset.cat = idea.cat;
-    const catLabel = { festival:'Festival', trip:'One-day trip', beauty:'Beauty / spa', menjar:'Menjar' }[idea.cat] || idea.cat;
+    card.dataset.idx = realIdx;
+    const catLabel = { festival:'Festival', trip:'One-day trip', beauty:'Beauty / spa', menjar:'Menjar', cafe:'Cafè' }[idea.cat] || idea.cat;
+    const placeholderEmoji = CAT_EMOJI[idea.cat] || '🗺️';
     card.innerHTML = `
+      <div class="idea-img-wrap">
+        <div class="idea-img-empty">${placeholderEmoji}</div>
+        <img class="idea-img" loading="lazy" alt="${escapeHtml(idea.title)}" />
+        <button class="idea-img-edit" data-edit-img="${realIdx}" title="Canviar imatge">✎</button>
+      </div>
       <div class="idea-cat">
         <span>${catLabel}</span>
         <button class="delete-x" data-del="${realIdx}" title="Treure">×</button>
       </div>
       <h3 contenteditable="true" data-field="title" data-i="${realIdx}">${escapeHtml(idea.title)}</h3>
+      <div class="idea-loc" contenteditable="true" data-field="loc" data-i="${realIdx}">${idea.loc ? '📍 ' + escapeHtml(idea.loc) : ''}</div>
       <p contenteditable="true" data-field="desc" data-i="${realIdx}">${escapeHtml(idea.desc||'')}</p>
     `;
     grid.appendChild(card);
+    // Carrega imatge immediatament (cached per Wikipedia + localStorage)
+    loadIdeaImage(card, idea);
   });
   const add = document.createElement('div');
   add.className = 'idea-card idea-card-add';
   add.textContent = '+ Nova idea';
   add.addEventListener('click', () => {
     const cat = ideaFilter==='all' ? 'trip' : ideaFilter;
-    state.ideas.unshift({ cat, title: 'Nova idea', desc: '' });
+    state.ideas.unshift({ cat, title: 'Nova idea', desc: '', loc: '' });
     renderIdeas(); save();
   });
   grid.appendChild(add);
@@ -1967,13 +2169,30 @@ function renderIdeas() {
   grid.querySelectorAll('[contenteditable]').forEach(el => {
     el.addEventListener('blur', () => {
       const i = +el.dataset.i;
-      state.ideas[i][el.dataset.field] = el.textContent.trim();
+      let val = el.textContent.trim();
+      // Per loc, treu el "📍 " inicial si l'usuari l'ha mantingut
+      if (el.dataset.field === 'loc') val = val.replace(/^📍\s*/, '').trim();
+      state.ideas[i][el.dataset.field] = val;
       save();
     });
   });
   grid.querySelectorAll('[data-del]').forEach(b => {
     b.addEventListener('click', () => {
       state.ideas.splice(+b.dataset.del, 1);
+      renderIdeas(); save();
+    });
+  });
+  grid.querySelectorAll('[data-edit-img]').forEach(b => {
+    b.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const i = +b.dataset.editImg;
+      const cur = state.ideas[i].img || '';
+      const next = prompt("Enganxa l'URL de la imatge (deixa-ho buit per esborrar):", cur);
+      if (next === null) return;
+      state.ideas[i].img = next.trim();
+      // També esborrem el cache de wiki perquè re-busqui si es deixa buit
+      const cacheKey = 'xina-img:' + ideaWikiQuery(state.ideas[i]).toLowerCase().trim();
+      if (!next.trim()) localStorage.removeItem(cacheKey);
       renderIdeas(); save();
     });
   });
@@ -2950,8 +3169,206 @@ function renderAll() {
   if (mapInstance) drawRoute(); // refresh route if map already shown
 }
 
+// ============ MIGRATION / UPGRADE ============
+// Nova versió del pla — itinerari real amb hores Air China + ruta refinada
+const UPGRADED_ITINERARY = [
+  { date:'2026-06-17', day:'Dc', where:'Zuric → Ginebra', tag:'train', notes:'Gemma agafa el tren cap a Ginebra. Dorm a casa de la Isabel.', activities:['Maleta llesta','Trobada amb Isabel'] },
+  { date:'2026-06-18', day:'Dj', where:'Ginebra → Pequín', tag:'flight', notes:'CA862 13:20 GVA T1 → 05:25+1 PEK T3 (10h05m). A350-900. Seients 46B/46C.', activities:['Check-in 11:00','Confirmar visa i passaport','Adaptador endolls'] },
+  { date:'2026-06-19', day:'Dv', where:'Pequín → Chengdu', tag:'flight', notes:"CA1421 08:30 PEK T3 → 11:25 CTU T2 (2h55m). Connexió 3h. Casa Lin a la tarda. 端午节 Festival Drac!", activities:['eSIM xinesa','WeChat + Alipay','Saludar Lin','Hotpot Sichuan amb Lin'] },
+  { date:'2026-06-20', day:'Ds', where:'Chengdu — centre antic', tag:'stay', notes:"Aclimatació. Centre tradicional: Jinli, Kuanzhai, People's Park.", activities:['Jinli Ancient Street','Kuanzhai Alley',"People's Park (te tradicional)"] },
+  { date:'2026-06-21', day:'Dg', where:'Chengdu — temples i barri modern', tag:'stay', notes:"Wenshu Monastery + dinar vegetarià. Tarda Tai Koo Li (compres + cafès). Vespre opera Sichuan opcional.", activities:['Wenshu Monastery (dinar veg)','Tai Koo Li tarda','Sichuan opera (opcional)'] },
+  { date:'2026-06-22', day:'Dl', where:'Chengdu — day trip', tag:'stay', notes:'Excursió: Mt Qingcheng + Dujiangyan (UNESCO). Alternatives: Leshan Buddha o Sanxingdui.', activities:['Mt Qingcheng','Dujiangyan irrigation'] },
+  { date:'2026-06-23', day:'Dt', where:'Chengdu → Chongqing', tag:'train', notes:'Dinar a Chengdu, després tren bala (~1h30). Hongya Cave de nit. Hotpot Chongqing.', activities:['Tren bala 14h','Hongya Cave','Hotpot Chongqing'] },
+  { date:'2026-06-24', day:'Dc', where:'Chongqing — day trip', tag:'stay', notes:'Decisió: Wulong (3 ponts naturals UNESCO, ple dia, WOW natural) o Dazu (rock carvings UNESCO, més curt, cultural).', activities:['Wulong Karst','o alternativa Dazu'] },
+  { date:'2026-06-25', day:'Dj', where:'Chongqing — ciutat', tag:'stay', notes:'Liziba Light Rail (metro creua edifici), Ciqikou Old Town, Eling Erchang, Nan Shan vista nocturna.', activities:['Liziba train station','Ciqikou','Eling Park','Nan Shan Yi Ke Shu'] },
+  { date:'2026-06-26', day:'Dv', where:'Chongqing → Guiyang', tag:'train', notes:'Tren matí (~2h). Tarda Guiyang: Jiaxiu Tower, sour soup fish.', activities:['Tren ~9h','Jiaxiu Tower','酸汤鱼 dinar'] },
+  { date:'2026-06-27', day:'Ds', where:'Guiyang → Yangshuo', tag:'train', notes:'Matí lliure (cafè/passeig riu). Tren Guiyang→Guilin (~3h) + transfer Yangshuo (~1.5h). Vespre West Street.', activities:['Cafè/passeig matí','Tren ~13h','Transfer Yangshuo','West Street vespre'] },
+  { date:'2026-06-28', day:'Dg', where:'Yangshuo — karst', tag:'stay', notes:'Sortida sol Xianggong Hill (4:30 AM!). Bici countryside. Posta sol bambú raft Yulong River. Vespre Impression Liu Sanjie.', activities:['🌅 Sortida sol Xianggong','Bici Yangshuo','🌇 Sunset bambú raft Yulong','Impression Liu Sanjie'] },
+  { date:'2026-06-29', day:'Dl', where:'Yangshuo / Guilin', tag:'stay', notes:'Creueret riu Li Guilin→Yangshuo (4-5h). O alternatiu: Longji Rice Terraces (full day).', activities:['Creueret riu Li','o Longji terraces'] },
+  { date:'2026-06-30', day:'Dt', where:'Guilin → Pequín → Mutianyu', tag:'flight', notes:'CA1940 12:00 KWL → 14:55 PEK T3 (B737, seients 14A/14B). Drive a Mutianyu (~1.5h). SUNSET WALL. Sopar al hotel.', activities:['Vol KWL→PEK','Transfer Mutianyu','🌇 Sunset Muralla','Sopar Brickyard'] },
+  { date:'2026-07-01', day:'Dc', where:'Mutianyu → Pequín → Ginebra', tag:'flight', notes:'04:55 SORTIDA DE SOL Wall. Esmorzar 7h. Sortir hotel 7:30. CA619 11:50 PEK T3 → 16:40 GVA T1 (10h50m, A350). Seients 46C/46B.', activities:['🌅 Sortida sol Muralla','Esmorzar hotel','Drive PEK','Vol GVA'] },
+  { date:'2026-07-02', day:'Dj', where:'Ginebra → Zuric', tag:'train', notes:'Gemma marxa cap a Zuric.', activities:['Tren CFF/SBB'] }
+];
+
+const UPGRADED_TRAVEL = [
+  { type:'Tren', from:'Zuric HB', to:'Ginebra', date:'2026-06-17', who:'gemma', ref:'SBB — confirmar bitllet' },
+  { type:'Vol', from:'Ginebra (GVA)', to:'Pequín (PEK)', date:'2026-06-18', who:'both', ref:'CA862 13:20→05:25+1 · A350-900 · Seients 46B/46C · Ref FLH8OM (NC52ZR)' },
+  { type:'Vol', from:'Pequín (PEK)', to:'Chengdu (CTU)', date:'2026-06-19', who:'both', ref:'CA1421 08:30→11:25 · A350-900 · Seients 37B/37A · Connexió 3h05' },
+  { type:'Tren', from:'Chengdu', to:'Chongqing', date:'2026-06-23', who:'both', ref:'Tren bala ~1h30 · Comprar Trip.com o 12306 · Necessari passaport per recollir' },
+  { type:'Tren', from:'Chongqing', to:'Guiyang', date:'2026-06-26', who:'both', ref:'~2h matí · Comprar Trip.com' },
+  { type:'Tren', from:'Guiyang', to:'Guilin', date:'2026-06-27', who:'both', ref:'~3h matí · + transfer privat Guilin→Yangshuo (~1.5h)' },
+  { type:'Vol', from:'Guilin (KWL)', to:'Pequín (PEK)', date:'2026-06-30', who:'both', ref:'CA1940 12:00→14:55 · Boeing 737 · Dalian Airlines · Seients 14A/14B · Connexió 20h55' },
+  { type:'Vol', from:'Pequín (PEK)', to:'Ginebra (GVA)', date:'2026-07-01', who:'both', ref:'CA619 11:50→16:40 · A350-900 · Seients 46C/46B · Arribada GVA 16:40' },
+  { type:'Tren', from:'Ginebra', to:'Zuric', date:'2026-07-02', who:'gemma', ref:'SBB' }
+];
+
+const UPGRADED_IDEAS = [
+  // Festival
+  { cat:'festival', title:'端午节 Dragon Boat Festival', loc:'Chengdu / arreu Xina', wiki:'Dragon Boat Festival', desc:'19 juny 2026. Carreres de barcos del drac, mengen 粽子 zòngzi (arròs farcit en fulla de bambú). Confirmar lloc i hora a Chengdu amb Lin.' },
+  // Trips
+  { cat:'trip', title:'Mt Qingcheng + Dujiangyan', loc:'Sichuan (~1.5h Chengdu)', wiki:'Mount Qingcheng', desc:"UNESCO: muntanya sagrada taoista + sistema d'irrigació de fa 2000 anys. Ple dia des de Chengdu." },
+  { cat:'trip', title:'Leshan Giant Buddha', loc:'Sichuan (~2.5h Chengdu)', wiki:'Leshan Giant Buddha', desc:'Buda gegant esculpit a la roca, ~3h des de Chengdu. Day trip relaxat.' },
+  { cat:'trip', title:'Wulong Karst (Chongqing)', loc:'Chongqing (~2.5h)', wiki:'Wulong Karst', desc:'UNESCO: 3 ponts naturals (Tianlong, Qinglong, Heilong) + Cova Furong. ~2.5h cotxe. Sortia a Transformers 4. WOW natural. Dia llarg (10-12h).' },
+  { cat:'trip', title:'Dazu Rock Carvings (Chongqing)', loc:'Chongqing (~1.5h)', wiki:'Dazu Rock Carvings', desc:'UNESCO: escultures budistes en pedra, ~1.5h cotxe. Cultural, més curt. Alternativa a Wulong.' },
+  { cat:'trip', title:'Hongya Cave (Chongqing nit)', loc:'Chongqing centre', wiki:'Hongya Cave', desc:'洪崖洞. Edifici tradicional il·luminat de nit, estil Spirited Away. Imprescindible després de sopar.' },
+  { cat:'trip', title:'Liziba Light Rail (Chongqing)', loc:'Chongqing', wiki:'Liziba station', desc:'李子坝. El metro travessa un edifici residencial. Viral a TikTok. Hi ha cafè per veure-ho passar.' },
+  { cat:'trip', title:'Ciqikou Old Town (Chongqing)', loc:'Chongqing', wiki:'Ciqikou', desc:'磁器口. Carrers antics + snacks tradicionals.' },
+  { cat:'trip', title:'Eling Erchang (Chongqing)', loc:'Chongqing (Eling)', desc:'鹅岭二厂. Antiga fàbrica reconvertida en hub creatiu. Cafès indie, art, vistes.' },
+  { cat:'trip', title:'Nan Shan Yi Ke Shu (Chongqing)', loc:'Chongqing (Nan Shan)', desc:'南山一棵树. Mirador nocturn del skyline de Chongqing.' },
+  { cat:'trip', title:'Jiaxiu Tower (Guiyang)', loc:'Guiyang centre', wiki:'Jiaxiu Tower', desc:'甲秀楼. Pagoda al riu, símbol de Guiyang. Bonica de nit.' },
+  { cat:'trip', title:'Qingyan Ancient Town (Guiyang)', loc:'Guiyang (~30min)', wiki:'Qingyan Ancient Town', desc:'青岩古镇. Vila antiga 30 min de Guiyang. Bonic de nit.' },
+  { cat:'trip', title:'Huangguoshu Falls (Guiyang)', loc:'Guizhou (~2h Guiyang)', wiki:'Huangguoshu Waterfall', desc:"黄果树瀑布. Cascada més gran d'Àsia, 2h cotxe. Day trip ple. Turístic però impressionant." },
+  { cat:'trip', title:'🌅 Sortida sol Xianggong Hill', loc:'Yangshuo (~1h cotxe)', wiki:'Yangshuo County', desc:'相公山. EL lloc per al karst sortint del riu Li al matí. Aixecar-se 4:30, drive 1h. Imprescindible.' },
+  { cat:'trip', title:'🌇 Posta sol bambú raft Yulong', loc:'Yangshuo (Riu Yulong)', wiki:'Yulong River', desc:'玉龙河. Més tranquil que el Li, perfecte al sunset. Bambú raft tradicional.' },
+  { cat:'trip', title:'Bicicleta Yangshuo countryside', loc:'Yangshuo', wiki:'Yangshuo County', desc:'Ten Mile Gallery, Big Banyan Tree, Moon Hill. ~3-4h relaxat.' },
+  { cat:'trip', title:'Creueret riu Li (Guilin→Yangshuo)', loc:'Guilin → Yangshuo', wiki:'Li River', desc:'4-5h en barco a través del paisatge càrstic. EL clàssic.' },
+  { cat:'trip', title:'Longji Rice Terraces', loc:'Guilin (~2.5h)', wiki:'Longsheng Rice Terraces', desc:"龙脊梯田. Terrasses d'arròs, 2.5h de Guilin. Pingan o Dazhai. Alternativa al creueret." },
+  { cat:'trip', title:'Impression Liu Sanjie', loc:'Yangshuo (Riu Li)', wiki:'Impression Sanjie Liu', desc:'印象·刘三姐. Espectacle aquàtic de Zhang Yimou amb 600 ballarins, sobre el riu Li.' },
+  { cat:'trip', title:'🏯 Mutianyu Wall', loc:'Pequín (~1.5h aeroport)', wiki:'Mutianyu', desc:"Secció restaurada de la Muralla, 1.5h de PEK. Sunset el 30 de juny, sunrise l'1 de juliol." },
+  { cat:'trip', title:'🏨 Brickyard Retreat at Mutianyu', loc:'Mutianyu, Pequín', desc:'Boutique a fàbrica de teules reconvertida, peus de la Muralla. Habitacions 11/12/14 amb vista. ~1500-2000 RMB. RECOMANAT.' },
+  { cat:'trip', title:'🏨 Commune by the Great Wall (luxe)', loc:'Shuiguan, Pequín', wiki:'Commune by the Great Wall', desc:'Villas dissenyades per arquitectes asiàtics famosos. Vista garantida. ~2500-5000 RMB. Splurge.' },
+  // Beauty
+  { cat:'beauty', title:'Massatge tuina (Chengdu)', loc:'Chengdu', wiki:'Tui na', desc:'Massatge tradicional xinès amb acupressió. Demanar a Lin un lloc bo (~80-200 RMB).' },
+  { cat:'beauty', title:'Sichuan opera face change', loc:'Chengdu (Shufeng Yayun)', wiki:'Sichuan opera', desc:'川剧变脸 a Shufeng Yayun Teahouse de Chengdu. Espectacle clàssic.' },
+  // Menjar
+  { cat:'menjar', title:'Hotpot Sichuan (Chengdu)', loc:'Chengdu', wiki:'Sichuan hot pot', desc:'蜀大侠 (Shu Da Xia) ambient teatral, o Haidilao per a primers. Mala 麻辣 = picant + entumit.' },
+  { cat:'menjar', title:'Mapo tofu — Chen Mapo Tofu', loc:'Chengdu (Qingyang)', wiki:'Mapo tofu', desc:'陈麻婆豆腐. La mapo tofu original, 100+ anys. Chengdu.' },
+  { cat:'menjar', title:'Mi Xun Teahouse (Chengdu)', loc:'Chengdu (Temple House)', desc:'Vegetarià modern al Hotel Temple House. Instagramable + menú creatiu.' },
+  { cat:'menjar', title:'Long Chao Shou (Chengdu)', loc:'Chengdu (Chunxi Road)', desc:'龙抄手. Wonton specialty, una institució a Chengdu.' },
+  { cat:'menjar', title:'Hotpot Chongqing', loc:'Chongqing', wiki:'Chongqing hotpot', desc:'Més picant que el Sichuan. 周君记 o 八一好吃街. Imprescindible la primera nit a Chongqing.' },
+  { cat:'menjar', title:'Xiao mian (Chongqing)', loc:'Chongqing', wiki:'Chongqing noodles', desc:"小面. Fideus locals d'esmorzar. Ràpid i picant." },
+  { cat:'menjar', title:'Sour soup fish (Guiyang)', loc:'Guiyang', desc:'酸汤鱼. Especialitat de Guizhou. Provar a 老凯里酸汤鱼.' },
+  { cat:'menjar', title:'Silk doll wrap (Guiyang)', loc:'Guiyang (carrer 二七路)', desc:'丝娃娃. Crep prim amb verdures. Carrer 二七路.' },
+  { cat:'menjar', title:'Guilin rice noodles', loc:'Guilin / Yangshuo', wiki:'Guilin rice noodles', desc:'桂林米粉. MUST. Esmorzar local. Qualsevol lloc petit i popular.' },
+  { cat:'menjar', title:'Beer fish (Yangshuo)', loc:'Yangshuo', desc:'啤酒鱼. Peix cuit amb cervesa. Especialitat local de Yangshuo.' },
+  { cat:'menjar', title:'Pato laqueado (si visiteu Pequín centre)', loc:'Pequín', wiki:'Peking duck', desc:"No tindrem temps amb el pla actual de Mutianyu. Da Dong Roast Duck o Quanjude si s'ajusta." },
+  // Cafès
+  { cat:'cafe', title:'%Arabica (Chengdu Tai Koo Li)', loc:'Chengdu (Tai Koo Li)', desc:'Cafè japonès minimalista, latte art impecable. Múltiples localitzacions a Chengdu.' },
+  { cat:'cafe', title:'Manner Coffee (Chengdu)', loc:'Chengdu', desc:"Cadena d'especialitat xinesa. Bons preus, bona qualitat." },
+  { cat:'cafe', title:'Letterpress Coffee (Chengdu)', loc:'Chengdu', desc:'Espresso bar molt cuidat, atmosfera dissenyada.' },
+  { cat:'cafe', title:'见解 Coffee (Chengdu)', loc:'Chengdu', desc:'Atmosfera dissenyada, popular entre locals creatius.' },
+  { cat:'cafe', title:'Liziba Train Cafe (Chongqing)', loc:'Chongqing (Liziba)', desc:'Terrassa amb el tren passant per davant. Únic al món.' },
+  { cat:'cafe', title:'Eling Erchang cafès (Chongqing)', loc:'Chongqing (Eling)', desc:"Múltiples cafès indie a la fàbrica reconvertida. Per perdre's-hi." },
+  { cat:'cafe', title:'%Arabica (Chongqing)', loc:'Chongqing', desc:'Sucursal local — busca la del Hongya Cave amb vista del riu.' }
+];
+
+const UPGRADED_TODOS = [
+  { text:'⏰ Reservar hotel Mutianyu (Brickyard o Commune)', owner:'both', done:false },
+  { text:'⏰ Reservar transfers privats PEK ↔ Mutianyu (30 jun + 1 jul)', owner:'both', done:false },
+  { text:'⏰ Decidir: Wulong vs Dazu (24 juny)', owner:'both', done:false },
+  { text:'⏰ Demanar a Lin recomanacions Guiyang', owner:'gemma', done:false },
+  { text:'Comprar bitllet tren bala Chengdu→Chongqing (23 juny)', owner:'both', done:false },
+  { text:'Comprar bitllet tren Chongqing→Guiyang (26 juny matí)', owner:'both', done:false },
+  { text:'Comprar bitllet tren Guiyang→Guilin (27 juny matí)', owner:'both', done:false },
+  { text:'Reservar transfer Guilin→Yangshuo (27 juny)', owner:'both', done:false },
+  { text:'Reservar Impression Liu Sanjie (28 juny vespre)', owner:'both', done:false },
+  { text:'Reservar creueret riu Li o Longji (29 juny)', owner:'both', done:false },
+  { text:'Reservar sortida sol Xianggong Hill (28 juny matiner)', owner:'both', done:false }
+];
+
+const PLAN_VERSION = 'v4-2026-05-10c';
+
+// Idees i activitats que la usuària no vol — s'esborren de l'estat existent en aplicar
+const EXCLUDED_IDEA_TITLES = [
+  'panda base chengdu',
+  'panda base + du fu cottage',
+  'sanxingdui museum',
+  'qianling mountain park (guiyang)',
+  'foot spa',
+  "采耳 cǎi'ěr (neteja oïdes)",
+  'xijiang miao village'
+];
+const EXCLUDED_ACTIVITY_KEYWORDS = [
+  'panda base',
+  '采耳',
+  'qianling',
+  'sanxingdui',
+  'xijiang'
+];
+
+function needsUpgrade() {
+  if (!state.itinerary || !state.itinerary.length) return false;
+  // Senyal: el dia 23 ha de ser el moviment Chengdu→Chongqing al pla nou
+  const d23 = state.itinerary.find(d => d.date === '2026-06-23');
+  return !d23 || !/Chongqing/i.test(d23.where || '');
+}
+
+function checkUpgradeBanner() {
+  const banner = document.getElementById('upgrade-banner');
+  if (!banner) return;
+  const dismissed = localStorage.getItem('xina-upgrade-dismissed') === PLAN_VERSION;
+  if (needsUpgrade() && !dismissed) {
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function applyUpgrade() {
+  if (!confirm("Substituiré l'itinerari (16 dies) i els Vols & Trens. Esborraré idees no volgudes (Panda Base, 采耳, Qianling, Foot spa, Sanxingdui, Xijiang). Idees i pendents nous s'afegeixen sense esborrar la resta. Continuar?")) return;
+  // Reemplaça itinerari i vols
+  state.itinerary = JSON.parse(JSON.stringify(UPGRADED_ITINERARY));
+  state.travel = JSON.parse(JSON.stringify(UPGRADED_TRAVEL));
+  // Esborra idees no volgudes
+  state.ideas = (state.ideas || []).filter(i => {
+    const title = (i.title || '').toLowerCase().trim();
+    return !EXCLUDED_IDEA_TITLES.includes(title);
+  });
+  // Backfill loc/wiki a idees existents amb el mateix títol
+  const upgradeMap = new Map(UPGRADED_IDEAS.map(i => [i.title.toLowerCase().trim(), i]));
+  state.ideas.forEach(idea => {
+    const u = upgradeMap.get((idea.title || '').toLowerCase().trim());
+    if (u) {
+      if (!idea.loc && u.loc) idea.loc = u.loc;
+      if (!idea.wiki && u.wiki) idea.wiki = u.wiki;
+    }
+  });
+  // Merge ideas noves (no duplica per títol)
+  const existingTitles = new Set(state.ideas.map(i => (i.title || '').toLowerCase().trim()));
+  UPGRADED_IDEAS.forEach(idea => {
+    if (!existingTitles.has(idea.title.toLowerCase().trim())) {
+      state.ideas.push({ ...idea });
+    }
+  });
+  // Esborra activitats no volgudes de l'itinerari (per si l'usuària les havia afegit manualment)
+  state.itinerary.forEach(d => {
+    if (!Array.isArray(d.activities)) return;
+    d.activities = d.activities.filter(a => {
+      const text = typeof a === 'string' ? a : (a.text || '');
+      const lower = text.toLowerCase();
+      return !EXCLUDED_ACTIVITY_KEYWORDS.some(k => lower.includes(k.toLowerCase()));
+    });
+  });
+  // Merge todos (no duplica per text)
+  const existingTodos = new Set((state.todos || []).map(t => (t.text || '').toLowerCase().trim()));
+  UPGRADED_TODOS.forEach(t => {
+    if (!existingTodos.has(t.text.toLowerCase().trim())) {
+      state.todos.push({ ...t });
+    }
+  });
+  save();
+  renderAll();
+  document.getElementById('upgrade-banner').style.display = 'none';
+  localStorage.setItem('xina-upgrade-dismissed', PLAN_VERSION);
+  alert('Pla actualitzat ✓ (panda, 采耳, qianling, foot spa, sanxingdui i xijiang esborrats)');
+}
+
+document.getElementById('btn-apply-upgrade').addEventListener('click', applyUpgrade);
+document.getElementById('btn-dismiss-upgrade').addEventListener('click', () => {
+  document.getElementById('upgrade-banner').style.display = 'none';
+  localStorage.setItem('xina-upgrade-dismissed', PLAN_VERSION);
+});
+
 // kickoff
 initFirebase();
+// Comprova el banner d'upgrade després de carregar les dades
+const upgradeCheckInterval = setInterval(() => {
+  if (isInitialized) {
+    clearInterval(upgradeCheckInterval);
+    checkUpgradeBanner();
+  }
+}, 200);
+setTimeout(() => clearInterval(upgradeCheckInterval), 10000);
 
 // ============ ONLINE / OFFLINE DETECTOR ============
 function updateNetworkStatus() {
