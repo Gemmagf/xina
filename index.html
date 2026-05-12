@@ -3121,15 +3121,15 @@ document.getElementById('notes-area').addEventListener('input', e => {
 });
 
 // ============ MAPA ============
+// Només ciutats dins la Xina — el mapa es focalitza al tram xinès del viatge
 const CITY_COORDS = {
-  'Zuric': [47.3769, 8.5417],
-  'Ginebra': [46.2044, 6.1432],
   'Pequín': [39.9042, 116.4074],
   'Chengdu': [30.5728, 104.0668],
   'Chongqing': [29.5630, 106.5516],
   'Guiyang': [26.6470, 106.6302],
   'Guilin': [25.2342, 110.1796],
-  'Yangshuo': [24.7787, 110.4960]
+  'Yangshuo': [24.7787, 110.4960],
+  'Mutianyu': [40.4319, 116.5704]
 };
 let mapInstance = null;
 let mapLayers = [];
