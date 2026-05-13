@@ -1454,8 +1454,8 @@
 
   <div class="upgrade-banner" id="upgrade-banner" style="display:none">
     <div>
-      <strong>🆕 Pla actualitzat disponible</strong>
-      +20 idees noves extretes de reels d'Instagram: Xia Hao Lane, Drone show Chongqing, Hong Dingyin hotpot, Wulong amagat, Simatai Wall nocturn, etc. No sobreescriu res existent.
+      <strong>🆕 +20 idees noves + imatges reals</strong>
+      Cards dels reels d'Instagram (Xia Hao Lane, Drone show, Hong Dingyin, Wulong, Simatai...) amb fotos reals dels llocs. No sobreescriu res existent.
     </div>
     <button class="upgrade-btn" id="btn-apply-upgrade">Aplicar</button>
     <button class="dismiss" id="btn-dismiss-upgrade" title="Tancar">×</button>
@@ -3391,7 +3391,7 @@ const UPGRADED_TODOS = [
   { text:'Reservar sortida sol Xianggong Hill (28 juny matiner)', owner:'both', done:false }
 ];
 
-const PLAN_VERSION = 'v5-2026-05-12-reels';
+const PLAN_VERSION = 'v6-2026-05-12-images';
 
 // Idees i activitats que la usuària no vol — s'esborren de l'estat existent en aplicar
 const EXCLUDED_IDEA_TITLES = [
@@ -3413,9 +3413,20 @@ const EXCLUDED_ACTIVITY_KEYWORDS = [
 
 function needsUpgrade() {
   if (!state.itinerary || !state.itinerary.length) return false;
-  // Senyal: el dia 23 ha de ser el moviment Chengdu→Chongqing al pla nou
+  // 1) Itinerari amb la ruta nova
   const d23 = state.itinerary.find(d => d.date === '2026-06-23');
-  return !d23 || !/Chongqing/i.test(d23.where || '');
+  if (!d23 || !/Chongqing/i.test(d23.where || '')) return true;
+  // 2) Alguna UPGRADED_IDEAS no està a l'estat actual?
+  const existingTitles = new Set((state.ideas || []).map(i => (i.title || '').toLowerCase().trim()));
+  const missingIdea = UPGRADED_IDEAS.some(u => !existingTitles.has(u.title.toLowerCase().trim()));
+  if (missingIdea) return true;
+  // 3) Alguna idea coincident té img al pla però no a l'estat?
+  const upgMap = new Map(UPGRADED_IDEAS.map(i => [i.title.toLowerCase().trim(), i]));
+  const imgMissing = (state.ideas || []).some(i => {
+    const u = upgMap.get((i.title || '').toLowerCase().trim());
+    return u && u.img && !i.img;
+  });
+  return imgMissing;
 }
 
 function checkUpgradeBanner() {
@@ -3439,13 +3450,14 @@ function applyUpgrade() {
     const title = (i.title || '').toLowerCase().trim();
     return !EXCLUDED_IDEA_TITLES.includes(title);
   });
-  // Backfill loc/wiki a idees existents amb el mateix títol
+  // Backfill loc/wiki/img a idees existents amb el mateix títol
   const upgradeMap = new Map(UPGRADED_IDEAS.map(i => [i.title.toLowerCase().trim(), i]));
   state.ideas.forEach(idea => {
     const u = upgradeMap.get((idea.title || '').toLowerCase().trim());
     if (u) {
       if (!idea.loc && u.loc) idea.loc = u.loc;
       if (!idea.wiki && u.wiki) idea.wiki = u.wiki;
+      if (!idea.img && u.img) idea.img = u.img;
     }
   });
   // Merge ideas noves (no duplica per títol)
