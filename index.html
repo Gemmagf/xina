@@ -1470,8 +1470,8 @@
 
   <div class="upgrade-banner" id="upgrade-banner" style="display:none">
     <div>
-      <strong>🆕 +20 idees noves + imatges reals</strong>
-      Cards dels reels d'Instagram (Xia Hao Lane, Drone show, Hong Dingyin, Wulong, Simatai...) amb fotos reals dels llocs. No sobreescriu res existent.
+      <strong>🆕 Pla actualitzat</strong>
+      Idees noves + imatges reals + Festival Drac Xinjin + item d'equipatge (camiseta Atlético regal Lin). No sobreescriu res existent.
     </div>
     <button class="upgrade-btn" id="btn-apply-upgrade">Aplicar</button>
     <button class="dismiss" id="btn-dismiss-upgrade" title="Tancar">×</button>
@@ -1806,7 +1806,8 @@ const DEFAULT_DATA = {
     { id:'pk53', text:'Llibre / Kindle', cat:'other', owner:'both', done:false },
     { id:'pk54', text:'Ulleres de sol', cat:'other', owner:'both', done:false },
     { id:'pk55', text:'Paraigua plegable', cat:'other', owner:'both', done:false },
-    { id:'pk56', text:"Regal per a la Lin", cat:'other', owner:'gemma', done:false }
+    { id:'pk56', text:"Regal per a la Lin", cat:'other', owner:'gemma', done:false },
+    { id:'pk57', text:"Camiseta i bufanda de l'Atlético (regal de la Lin)", cat:'clothes', owner:'gemma', done:false }
   ],
   expenses: [],
   notesText: "",
@@ -3408,7 +3409,7 @@ const UPGRADED_TODOS = [
   { text:'Reservar sortida sol Xianggong Hill (28 juny matiner)', owner:'both', done:false }
 ];
 
-const PLAN_VERSION = 'v7-2026-05-12-xinjin';
+const PLAN_VERSION = 'v8-2026-05-17-atletico';
 
 // Idees i activitats que la usuària no vol — s'esborren de l'estat existent en aplicar
 const EXCLUDED_IDEA_TITLES = [
@@ -3428,6 +3429,11 @@ const EXCLUDED_ACTIVITY_KEYWORDS = [
   'xijiang'
 ];
 
+// Items d'equipatge essencials que cal garantir a l'estat (afegits via banner)
+const REQUIRED_PACKING = [
+  { id:'pk57', text:"Camiseta i bufanda de l'Atlético (regal de la Lin)", cat:'clothes', owner:'gemma', done:false }
+];
+
 function needsUpgrade() {
   if (!state.itinerary || !state.itinerary.length) return false;
   // 1) Itinerari amb la ruta nova
@@ -3443,7 +3449,10 @@ function needsUpgrade() {
     const u = upgMap.get((i.title || '').toLowerCase().trim());
     return u && u.img && !i.img;
   });
-  return imgMissing;
+  if (imgMissing) return true;
+  // 4) Falta algun ítem d'equipatge essencial?
+  const packIds = new Set((state.packing || []).map(p => p.id));
+  return REQUIRED_PACKING.some(p => !packIds.has(p.id));
 }
 
 function checkUpgradeBanner() {
@@ -3499,6 +3508,12 @@ function applyUpgrade() {
     if (!existingTodos.has(t.text.toLowerCase().trim())) {
       state.todos.push({ ...t });
     }
+  });
+  // Merge items d'equipatge essencials (per id)
+  state.packing = state.packing || [];
+  const packIds = new Set(state.packing.map(p => p.id));
+  REQUIRED_PACKING.forEach(p => {
+    if (!packIds.has(p.id)) state.packing.push({ ...p });
   });
   save();
   renderAll();
