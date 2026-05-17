@@ -576,6 +576,92 @@
     opacity: 0.4; font-size: 14px; line-height: 1;
   }
   .idea-cat .delete-x:hover { opacity: 1; color: var(--vermilion); }
+  .idea-cat-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-left: auto;
+  }
+  .idea-cat .add-itin-btn {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 10px;
+    padding: 1px 8px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--vermilion);
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+  .idea-cat .add-itin-btn:hover {
+    opacity: 1;
+    background: var(--vermilion);
+    color: var(--cream);
+  }
+
+  /* Modal selector de dia */
+  .day-picker-list {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin: 12px 0;
+    padding: 2px;
+  }
+  .day-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border: 1px solid rgba(26,20,16,0.15);
+    margin-bottom: 6px;
+    cursor: pointer;
+    background: var(--cream);
+    transition: all 0.15s;
+  }
+  .day-picker-item:hover {
+    border-color: var(--vermilion);
+    background: var(--paper-2);
+    transform: translateX(2px);
+  }
+  .day-picker-item .dp-date {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    flex-shrink: 0;
+    min-width: 50px;
+    line-height: 1;
+  }
+  .day-picker-item .dp-date small {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    display: block;
+    margin-top: 2px;
+  }
+  .day-picker-item .dp-where {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--ink);
+    flex: 1;
+  }
+  .day-picker-item .dp-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .day-picker-item .dp-tag.flight { background: var(--vermilion); color: var(--cream); }
+  .day-picker-item .dp-tag.train { background: var(--gold); color: var(--cream); }
+  .day-picker-item .dp-tag.stay { background: var(--jade); color: var(--cream); }
   .idea-card h3 {
     font-family: 'Fraunces', serif;
     font-weight: 500;
@@ -1672,6 +1758,17 @@
   </div>
 </div>
 
+<div class="modal-bg" id="modal-add-to-itin">
+  <div class="modal">
+    <h2>Afegir a <em>quin dia?</em></h2>
+    <p id="add-to-itin-subtitle">Tria el dia per afegir aquesta idea.</p>
+    <div class="day-picker-list" id="day-picker-list"></div>
+    <div class="modal-actions">
+      <button onclick="closeModal('modal-add-to-itin')">Cancel·lar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="modal-share">
   <div class="modal">
     <h2>Compartir el <em>viatge</em></h2>
@@ -2132,6 +2229,44 @@ function normCity(loc) {
   return 'altres';
 }
 
+let addToItinIdeaIdx = null;
+function openAddToItin(ideaIdx) {
+  addToItinIdeaIdx = ideaIdx;
+  const idea = state.ideas[ideaIdx];
+  if (!idea) return;
+  const subtitle = document.getElementById('add-to-itin-subtitle');
+  if (subtitle) subtitle.innerHTML = `Trio el dia per afegir <strong>${escapeHtml(idea.title)}</strong> a les activitats.`;
+  const list = document.getElementById('day-picker-list');
+  if (!list) return;
+  list.innerHTML = state.itinerary.map((d, i) => {
+    const dt = new Date(d.date + 'T00:00:00');
+    const tag = d.tag ? `<span class="dp-tag ${d.tag}">${TAG_LABEL[d.tag] || ''}</span>` : '';
+    return `
+      <div class="day-picker-item" data-day-i="${i}">
+        <span class="dp-date">${dt.getDate()}<small>${MONTHS_CA[dt.getMonth()]} · ${d.day || ''}</small></span>
+        <span class="dp-where">${escapeHtml(d.where)}</span>
+        ${tag}
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('.day-picker-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const dayI = +el.dataset.dayI;
+      const idea2 = state.ideas[addToItinIdeaIdx];
+      if (!idea2 || !state.itinerary[dayI]) return;
+      state.itinerary[dayI].activities = state.itinerary[dayI].activities || [];
+      state.itinerary[dayI].activities.push(idea2.title);
+      save();
+      renderItinerary();
+      closeModal('modal-add-to-itin');
+      const day = state.itinerary[dayI];
+      const dt = new Date(day.date + 'T00:00:00');
+      setTimeout(() => alert(`✓ Afegit al dia ${dt.getDate()} ${MONTHS_CA[dt.getMonth()]} — ${day.where}`), 80);
+    });
+  });
+  openModal('modal-add-to-itin');
+}
+
 function renderCityFilters() {
   const wrap = document.getElementById('idea-city-filters');
   if (!wrap) return;
@@ -2240,7 +2375,10 @@ function renderIdeas() {
       </div>
       <div class="idea-cat">
         <span>${catLabel}</span>
-        <button class="delete-x" data-del="${realIdx}" title="Treure">×</button>
+        <div class="idea-cat-actions">
+          <button class="add-itin-btn" data-add-itin="${realIdx}" title="Afegir a un dia de l'itinerari">📅 Itinerari</button>
+          <button class="delete-x" data-del="${realIdx}" title="Treure">×</button>
+        </div>
       </div>
       <h3 contenteditable="true" data-field="title" data-i="${realIdx}">${escapeHtml(idea.title)}</h3>
       <div class="idea-loc" contenteditable="true" data-field="loc" data-i="${realIdx}">${idea.loc ? '📍 ' + escapeHtml(idea.loc) : ''}</div>
@@ -2282,6 +2420,12 @@ function renderIdeas() {
     });
   });
   renderCityFilters();
+  grid.querySelectorAll('[data-add-itin]').forEach(b => {
+    b.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      openAddToItin(+b.dataset.addItin);
+    });
+  });
   grid.querySelectorAll('[data-edit-img]').forEach(b => {
     b.addEventListener('click', (ev) => {
       ev.stopPropagation();
