@@ -3470,6 +3470,7 @@ const UPGRADED_IDEAS = [
   { cat:'trip', title:'Longji Rice Terraces', loc:'Guilin (~2.5h)', wiki:'Longsheng Rice Terraces', desc:"龙脊梯田. Terrasses d'arròs, 2.5h de Guilin. Pingan o Dazhai. Alternativa al creueret." },
   { cat:'trip', title:'Impression Liu Sanjie', loc:'Yangshuo (Riu Li)', wiki:'Impression Sanjie Liu', desc:'印象·刘三姐. Espectacle aquàtic de Zhang Yimou amb 600 ballarins, sobre el riu Li.' },
   { cat:'trip', title:'🏯 Mutianyu Wall', loc:'Pequín (~1.5h aeroport)', wiki:'Mutianyu', desc:"Secció restaurada de la Muralla, 1.5h de PEK. Sunset el 30 de juny, sunrise l'1 de juliol." },
+  { cat:'trip', title:'🏨 Hotel Chongqing — Datangnuoya (RESERVAT ✓)', loc:'Yuzhong District, Chongqing', desc:"El nostre allotjament a Chongqing (nits 23, 24, 25 juny).\n\nAdreça:\nNo. 709, Building 2, Datangnuoya, No. 136 Changbin Road, Yuzhong District, Chongqing\n\nPer al taxi (mostrar en xinès):\n重庆市渝中区长滨路136号大唐诺亚2栋709室\n\n📍 Changbin Road (长滨路) és la via riberenca de la península de Yuzhong — molt a prop de Hongya Cave i el centre. Zona excel·lent." },
   { cat:'trip', title:'🏨 Brickyard Retreat at Mutianyu', loc:'Mutianyu, Pequín', desc:'Boutique a fàbrica de teules reconvertida, peus de la Muralla. Habitacions 11/12/14 amb vista. ~1500-2000 RMB. RECOMANAT.' },
   { cat:'trip', title:'🏨 Commune by the Great Wall (luxe)', loc:'Shuiguan, Pequín', wiki:'Commune by the Great Wall', desc:'Villas dissenyades per arquitectes asiàtics famosos. Vista garantida. ~2500-5000 RMB. Splurge.' },
   // Beauty
@@ -3562,7 +3563,7 @@ const UPGRADED_TODOS = [
   { text:'Reservar sortida sol Xianggong Hill (28 juny matiner)', owner:'both', done:false }
 ];
 
-const PLAN_VERSION = 'v11-2026-05-17-michelin1star';
+const PLAN_VERSION = 'v12-2026-05-17-hotel-cqng';
 
 // Idees i activitats que la usuària no vol — s'esborren de l'estat existent en aplicar
 const EXCLUDED_IDEA_TITLES = [
@@ -3620,10 +3621,16 @@ function checkUpgradeBanner() {
 }
 
 function applyUpgrade() {
-  if (!confirm("Substituiré l'itinerari (16 dies) i els Vols & Trens. Esborraré idees no volgudes (Panda Base, 采耳, Qianling, Foot spa, Sanxingdui, Xijiang). Idees i pendents nous s'afegeixen sense esborrar la resta. Continuar?")) return;
-  // Reemplaça itinerari i vols
-  state.itinerary = JSON.parse(JSON.stringify(UPGRADED_ITINERARY));
-  state.travel = JSON.parse(JSON.stringify(UPGRADED_TRAVEL));
+  if (!confirm("Afegiré les idees i pendents nous. Les activitats que hagis afegit als dies es mantenen. Continuar?")) return;
+  // Reemplaça itinerari i vols NOMÉS la primera vegada (estructura antiga).
+  // Si l'itinerari ja és el nou (dia 23 = Chongqing), NO el toquem — així no
+  // esborrem activitats afegides amb el botó 📅 ni notes escrites a mà.
+  const d23 = (state.itinerary || []).find(d => d.date === '2026-06-23');
+  const itinIsOld = !d23 || !/Chongqing/i.test(d23.where || '');
+  if (itinIsOld) {
+    state.itinerary = JSON.parse(JSON.stringify(UPGRADED_ITINERARY));
+    state.travel = JSON.parse(JSON.stringify(UPGRADED_TRAVEL));
+  }
   // Esborra idees no volgudes
   state.ideas = (state.ideas || []).filter(i => {
     const title = (i.title || '').toLowerCase().trim();
