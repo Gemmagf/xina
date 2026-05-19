@@ -2214,7 +2214,7 @@ let ideaFilter = 'all';
 let cityFilter = 'all';
 
 // Llista ordenada de ciutats conegudes per a normalitzar el camp loc
-const KNOWN_CITIES = ['Chongqing', 'Chengdu', 'Yangshuo', 'Guilin', 'Guiyang', 'Wulong', 'Mutianyu', 'Pequín', 'Pre-viatge', 'arreu Xina'];
+const KNOWN_CITIES = ['Chongqing', 'Chengdu', 'Yangshuo', 'Guilin', 'Guiyang', 'Anshun', 'Wulong', 'Mutianyu', 'Pequín', 'Pre-viatge', 'arreu Xina'];
 
 function normCity(loc) {
   if (!loc) return 'altres';
@@ -2226,6 +2226,7 @@ function normCity(loc) {
   if (/nan'?an|liziba|hongya/i.test(loc)) return 'Chongqing';
   if (/xianggong|yulong|li river/i.test(loc)) return 'Yangshuo';
   if (/sichuan/i.test(loc)) return 'Chengdu';
+  if (/huangguoshu/i.test(loc)) return 'Anshun';
   return 'altres';
 }
 
@@ -3462,7 +3463,11 @@ const UPGRADED_IDEAS = [
   { cat:'trip', title:'Nan Shan Yi Ke Shu (Chongqing)', loc:'Chongqing (Nan Shan)', desc:'南山一棵树. Mirador nocturn del skyline de Chongqing.' },
   { cat:'trip', title:'Jiaxiu Tower (Guiyang)', loc:'Guiyang centre', wiki:'Jiaxiu Tower', desc:'甲秀楼. Pagoda al riu, símbol de Guiyang. Bonica de nit.' },
   { cat:'trip', title:'Qingyan Ancient Town (Guiyang)', loc:'Guiyang (~30min)', wiki:'Qingyan Ancient Town', desc:'青岩古镇. Vila antiga 30 min de Guiyang. Bonic de nit.' },
-  { cat:'trip', title:'Huangguoshu Falls (Guiyang)', loc:'Guizhou (~2h Guiyang)', wiki:'Huangguoshu Waterfall', desc:"黄果树瀑布. Cascada més gran d'Àsia, 2h cotxe. Day trip ple. Turístic però impressionant." },
+  { cat:'trip', title:'Huangguoshu — info pràctica', loc:'Anshun (Huangguoshu)', wiki:'Huangguoshu Waterfall', desc:"黄果树. Cascada més gran d'Àsia. L'àrea té 3 zones connectades per shuttle bus (veure cards pròpies).\n\n• Entrada ~160¥ + shuttle obligatori 50¥ = ~210¥/persona. Escalator opcional +50¥.\n• Obert ~7h; les zones tanquen entre 17:30-18:30.\n• Compreu TOTS els tiquets a l'entrada (el parc és massa gran per comprar-los dins).\n• És un dia SENCER (~5h caminant).\n• 🌧️ Jun-oct = cabal màxim → finals de juny és el moment PERFECTE.\n• Transport: tren Guiyang Nord → Anshunxi (~30 min, ~47¥) → shuttle bus turístic a la cascada (~45 min, 25¥, pagar amb WeChat — gira a la dreta en sortir de l'estació)." },
+  { cat:'trip', title:'🌟 Huangguoshu — Gran Cascada (大瀑布)', loc:'Anshun (Huangguoshu)', wiki:'Huangguoshu Waterfall', desc:"La joia de l'àrea: la cascada principal de 77,8 m, vista des de múltiples plataformes a diferents nivells. T'esquitxa molt → porta impermeable!\n\nWater Curtain Cave (水帘洞): túnel que passa DARRERE la cortina d'aigua. Tiquet a part + reserva prèvia obligatòria (mini-program 'Anlvtong' a WeChat — límit 12.000/dia, 5 franges horàries, s'esgota d'hora).\n\nBaixada: escalator (+50¥) o a peu 15-20 min (la tornada puja, és dura). ~1h aquí." },
+  { cat:'trip', title:'👍 Huangguoshu — Tianxingqiao (天星桥)', loc:'Anshun (Huangguoshu)', desc:"L'àrea favorita de molts visitants. No és cascada sinó un jardí zen gegant: formacions càrstiques, ponts naturals de pedra, rius cristal·lins i camins de pedres on has de saltar per creuar l'aigua.\n\nInclou un sistema de coves enorme + la cascada Yinlian Zhuitan (银链坠潭) — petita però el camí passa enganxat al penya-segat, espectacular. Passeig d'1,5-2h dividit en 2 parts (la 2a és la més bonica, val la pena fer-la sencera)." },
+  { cat:'trip', title:'Huangguoshu — Doupotang (陡坡塘)', loc:'Anshun (Huangguoshu)', desc:"陡坡塘瀑布. Cascada més petita, aigües avall cap a l'entrada. Passeig elevat al costat del riu, tranquil i amb poca gent — bon respir entre les altres dues àrees. S'hi va rodar part de 'Viatge a l'Oest' (西游记): hi ha estàtues dels personatges i un mapa del seu recorregut." },
+  { cat:'trip', title:'🏨 Dormir a Huangguoshu / Anshun', loc:'Anshun (Huangguoshu)', desc:"Per dormir-hi i veure la cascada al capvespre + matí d'hora (la millor opció!):\n• Poble de Huangguoshu — a l'entrada de l'àrea, el més pràctic per anar caminant\n• Anshun ciutat — més hotels i serveis, té l'estació de tren Anshunxi (ex: Homeinn Plus Hotel, mid-range)\nReservar amb antelació per a la nit del 26 juny." },
   { cat:'menjar', title:'Mercat nocturn Qingyun Road (青云路夜市)', loc:'Guiyang', desc:"青云路夜市. EL lloc per al street food de Guizhou — 100+ parades en un sol carrer: graelles, broquetes, dumplings, fideus, tofu. Barat i autèntic. Perfecte per al vespre del dia d'arribada. Bullici local, poc turístic." },
   { cat:'trip', title:'Tianhetan (天河潭) — Guiyang', loc:'Guiyang (~25km)', wiki:'Tianhetan', desc:"天河潭. Complex de coves inundades, rius i cascades — passeig en barca pel paisatge càrstic de Guizhou. Bonic però necessita mig dia; si el temps a Guiyang és just, prioritzeu Jiaxiu + mercat nocturn." },
   { cat:'menjar', title:'Changwang noodles (肠旺面) — Guiyang', loc:'Guiyang', desc:"肠旺面. L'esmorzar típic de Guiyang: fideus amb sang de porc i intestí en brou picant. Sona fort però és deliciós i delicat. Ideal el matí abans d'agafar el tren." },
@@ -3567,7 +3572,7 @@ const UPGRADED_TODOS = [
   { text:'Reservar sortida sol Xianggong Hill (28 juny matiner)', owner:'both', done:false }
 ];
 
-const PLAN_VERSION = 'v14-2026-05-17-guiyang';
+const PLAN_VERSION = 'v15-2026-05-17-huangguoshu';
 
 // Idees i activitats que la usuària no vol — s'esborren de l'estat existent en aplicar
 const EXCLUDED_IDEA_TITLES = [
